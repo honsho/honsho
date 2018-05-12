@@ -1,0 +1,58 @@
+{
+  "name": "honsho",
+  "version": "0.1.0",
+  "description": "Honsho",
+  "main": "app/bundle.js",
+  "scripts": {
+    "dev": "webpack --config webpack.config.js --mode development --watch",
+    "start": "electron ./app/bundle.js",
+    "electron-rebuild": ".\\node_modules\\.bin\\electron-rebuild.cmd",
+    "dist": "electron-builder"
+  },
+  "author": "",
+  "license": "ISC",
+  "build": {
+    "appId": "honsho",
+    "compression": "normal",
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/sharp/**/*"
+    ],
+    "win": {
+      "target": ["nsis"]
+    }
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "electron": "^2.0.0",
+    "electron-builder": "^20.13.3",
+    "electron-rebuild": "^1.7.3",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.8.2",
+    "webpack-cli": "^2.1.3"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "desktop-screenshot": "^0.1.1",
+    "lodash.throttle": "^4.1.1",
+    "pngjs": "^3.3.3",
+    "react": "^16.3.2",
+    "react-color": "^2.14.1",
+    "react-dom": "^16.3.2",
+    "react-icons": "^2.2.7",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5",
+    "rodal": "^1.6.3",
+    "shallow-equal": "^1.0.0",
+    "sharp": "^0.20.2",
+    "styled-components": "^3.2.6",
+    "winston": "^3.0.0-rc5"
+  }
+}

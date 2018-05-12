@@ -1,0 +1,1 @@
+export const DEFAULT_WORKPLACE_TEXT_COLOR = { r: 0, g: 0, b: 0 };
