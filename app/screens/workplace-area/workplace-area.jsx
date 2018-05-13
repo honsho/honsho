@@ -3,9 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import { logger } from './../../services/logger';
-import { Wrapper } from './../../components/workplace-area/wrapper';
 import { DraggableArea } from './../../components/draggable-area';
-import { Content } from './../../components/workplace-area/content';
+import { WorkplaceAreaWrapper } from './../../components/workplace-area/workplace-area-wrapper';
+import { WorkplaceAreaContent } from './../../components/workplace-area/workplace-area-content';
 
 const currentWindow = remote.getCurrentWindow();
 
@@ -19,10 +19,10 @@ class WorkplaceArea extends React.Component {
     }
 
     render() {
-        return <Wrapper>
+        return <WorkplaceAreaWrapper>
             <DraggableArea />
-            <Content onMouseEnter={this.onContentEnter} onMouseLeave={this.onContentLeave} />
-        </Wrapper>;
+            <WorkplaceAreaContent onMouseEnter={this.onContentEnter} onMouseLeave={this.onContentLeave} />
+        </WorkplaceAreaWrapper>;
     }
 }
 

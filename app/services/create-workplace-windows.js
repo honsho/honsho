@@ -112,11 +112,15 @@ const createWorkplaceTextWindow = (id, textData) => {
     return text;
 }
 
-export const createWorkplaceWindows = (workplace, workplaces) => {
-    workplace = workplace || {};
-    workplaces = workplaces || [];
 
-    let id;
+export const createWorkplace = (app, workplaceData) => {
+    workplaceData = workplaceData || {};
+
+    const generatedId = Math.max(...Object.keys(app.store.get('workplaces') || { 0: true })) + 1;
+    const id = typeof workplaceData.id !== 'undefined' ? workplaceData.id : generatedId ;
+    
+    ipcRenderer.send('createWorkplace', { id });
+
     if (workplace.id) {
         id = workplace.id;
     } else {
@@ -129,4 +133,11 @@ export const createWorkplaceWindows = (workplace, workplaces) => {
     const text = createWorkplaceTextWindow(id, workplace.text);
 
     return { id, area, text };
+}
+
+export const createWorkplaceWindows = (workplace) => {
+    const area = createWorkplaceAreaWindow(workplace.id, workplace.area);
+    const text = createWorkplaceTextWindow(workplace.id, workplace.text);
+
+    return { id: workplace.id, area, text };
 }

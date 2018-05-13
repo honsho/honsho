@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Input } from './../input';
 
-export const WorkplaceImageCleanerErrorDelta = Input.extend.attrs({
+export const OcrErrorDelta = Input.extend.attrs({
     type: 'number',
     min: 0,
     max: 255

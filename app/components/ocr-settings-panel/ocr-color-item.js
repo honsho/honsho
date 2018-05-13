@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { DEFAULT_WORKPLACE_TEXT_COLOR } from './../../constants';
 
-export const WorkplaceImageCleanerColorItem = styled.div.attrs({
+export const OcrColorItem = styled.div.attrs({
     title: 'Цвет текста'
 })`
     width: 15px;

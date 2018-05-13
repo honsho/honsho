@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const Content = styled.div`
+export const WorkplaceAreaContent = styled.div`
     background: transparent;
     flex: 1 0;
     height: 100%;

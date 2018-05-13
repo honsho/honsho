@@ -1,15 +1,17 @@
 import styled, { css } from 'styled-components';
 
 export const Button = styled.button`
+    box-sizing: border-box;
     border-radius: 3px;
-    padding: ${props => props.withIcon ? '3px' : '5px 10px'};
+    padding: ${props => props.withIcon ? '0px' : '5px 10px'};
+    border: ${props => props.withIcon ? 'none' : '1px solid #b5d1f1'};
     background: transparent;
     color: #244769;
-    border: 1px solid #b5d1f1;
     cursor: pointer;
     outline: none;
     white-space: nowrap;
     -webkit-user-select: none;
+    margin: 0 2px;
 
     &[disabled] {
         cursor: not-allowed;

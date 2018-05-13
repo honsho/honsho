@@ -2,14 +2,17 @@ const { ipcRenderer } = require('electron');
 const shallowEqualObjects = require('shallow-equal/objects');
 import React from 'react';
 import { PhotoshopPicker } from 'react-color';
-import { WorkplaceImageCleanerWrapper } from './workplace-image-cleaner-wrapper';
-import { WorkplaceImageCleanerColorPicker } from './workplace-image-cleaner-color-picker';
-import { WorkplaceImageCleanerCheckbox } from './workplace-image-cleaner-checkbox';
-import { WorkplaceImageCleanerColorItem } from './workplace-image-cleaner-color-item';
-import { WorkplaceImageCleanerErrorDelta } from './workplace-image-cleaner-error-delta';
+import { OcrColorPicker } from './ocr-color-picker';
+import { OcrColorItem } from './ocr-color-item';
+import { OcrErrorDelta } from './ocr-error-delta';
+import { Panel } from './../panel/panel';
+import { PanelTitle } from './../panel/panel-title';
+import { PanelBody } from './../panel/panel-body';
+import { FormGroup } from '../form/form-group';
+import { FormLabel } from '../form/form-label';
 import { DEFAULT_WORKPLACE_TEXT_COLOR } from './../../constants';
 
-export class WorkplaceImageCleaner extends React.Component {
+export class OcrSettingsPanel extends React.Component {
     constructor(props) {
         super(props);
 
@@ -89,30 +92,45 @@ export class WorkplaceImageCleaner extends React.Component {
     }
 
     render() {
-        return <WorkplaceImageCleanerWrapper>
-            {this.state.pickerVisible && <WorkplaceImageCleanerColorPicker>
-                <PhotoshopPicker 
-                    header="Выберите цвет распознаваемого текста"
-                    color={this.state.pickerColor}
-                    onChangeComplete={this.setPickerColor}
-                    onAccept={this.onPickerColorAccept}
-                    onCancel={this.hideColorPicker}
-                />
-            </WorkplaceImageCleanerColorPicker>}
+        return <Panel>
+            <PanelTitle>Распознавание текста</PanelTitle>
+            <PanelBody>
+                {this.state.pickerVisible && <OcrColorPicker>
+                    <PhotoshopPicker 
+                        header="Выберите цвет распознаваемого текста"
+                        color={this.state.pickerColor}
+                        onChangeComplete={this.setPickerColor}
+                        onAccept={this.onPickerColorAccept}
+                        onCancel={this.hideColorPicker}
+                    />
+                </OcrColorPicker>}
 
-            <WorkplaceImageCleanerCheckbox onChange={this.onToggle} checked={this.state.enabled} />
+                <FormGroup>
+                    <FormLabel>Включить улучшенное распознавание текста</FormLabel>
+                    <input type="checkbox" onChange={this.onToggle} checked={this.state.enabled} />
+                </FormGroup>
 
-            {this.state.enabled && <WorkplaceImageCleanerColorItem color={this.state.color} onClick={this.showColorPicker} />}
-            {this.state.enabled && <WorkplaceImageCleanerErrorDelta 
-                value={this.state.basicErrorDelta}
-                title="Отклонение цвета текста при поиске по цвету текста"
-                onChange={this.onBasicErrorDeltaChange}
-            />}
-            {this.state.enabled && <WorkplaceImageCleanerErrorDelta 
-                value={this.state.diffErrorDelta}
-                title="Отклонение цвета текста при поиске соседних пикселей в найденных буквах"
-                onChange={this.onDiffErrorDeltaChange}
-            />}
-        </WorkplaceImageCleanerWrapper>
+                {this.state.enabled && <FormGroup>
+                    <FormLabel>Цвет текста</FormLabel>
+                    <OcrColorItem color={this.state.color} onClick={this.showColorPicker} />
+                </FormGroup>}
+
+                {this.state.enabled && <FormGroup>
+                    <FormLabel>Отклонение цвета текста при поиске по цвету текста</FormLabel>
+                    <OcrErrorDelta 
+                        value={this.state.basicErrorDelta}
+                        onChange={this.onBasicErrorDeltaChange}
+                    />
+                </FormGroup>}
+
+                {this.state.enabled && <FormGroup>
+                    <FormLabel>Отклонение цвета текста при поиске соседних пикселей в найденном</FormLabel>
+                    <OcrErrorDelta 
+                        value={this.state.diffErrorDelta}
+                        onChange={this.onDiffErrorDeltaChange}
+                    />
+                </FormGroup>}
+            </PanelBody>
+        </Panel>;
     }
 }

@@ -1,16 +1,17 @@
 const { ipcRenderer } = require('electron');
 const shallowEqualObjects = require('shallow-equal/objects');
 import React from 'react';
-import ReactDOM from 'react-dom';
+import MdHighlightRemove from 'react-icons/lib/md/highlight-remove';
+import MdVisibility from 'react-icons/lib/md/visibility';
+import MdVisibilityOff from 'react-icons/lib/md/visibility-off';
 import { WorkplaceHelper } from './../../services/workplace-helper';
+import { Button } from './../../components/button';
 import { List } from './../../components/list/list';
 import { ListItem } from './../../components/list/list-item';
 import { ListItemContent } from './../../components/list/list-item-content';
 import { ListItemButtons } from './../../components/list/list-item-buttons';
-import { DeleteButton } from './../../components/delete-button';
-import { EnableButton } from './../../components/enable-button';
 import { WorkplaceItemTitle } from './../../components/workplace-item/workplace-item-title';
-import { WorkplaceImageCleaner } from './../../components/workplace-image-cleaner/workplace-image-cleaner.jsx';
+import { WorkplaceSettings } from './workplace-settings.jsx';
 
 export class Workplaces extends React.Component {
     constructor(props) {
@@ -39,22 +40,23 @@ export class Workplaces extends React.Component {
     render() {
         return <div>
             <List>
-                {this.props.workplaces.map(({ id, active, imageCleaner }, i) => {
+                {this.props.workplaces.map(({ id, name, active, imageCleaner }, i) => {
                     imageCleaner = imageCleaner || {};
                     return <ListItem key={id}>
                         <ListItemContent>
-                            <WorkplaceItemTitle>#{i + 1}</WorkplaceItemTitle>
-                            <WorkplaceImageCleaner
-                                basicErrorDelta={imageCleaner.basicErrorDelta}
-                                diffErrorDelta={imageCleaner.diffErrorDelta}
-                                color={imageCleaner.textColor}
-                                onChange={data => this.onImageCleanerOptionsChange(id, data)}
-                            />
+                            <WorkplaceItemTitle>{name}</WorkplaceItemTitle>
                         </ListItemContent>
 
                         <ListItemButtons>
-                            <EnableButton onClick={() => this.toggleWorkplace(id)} active={active} />
-                            <DeleteButton onClick={() => this.removeWorkplace(id)} />
+                            <Button withIcon onClick={() => this.toggleWorkplace(id)}>
+                                {active ? <MdVisibility size={20} /> : <MdVisibilityOff size={20} />}
+                            </Button>
+
+                            <WorkplaceSettings />
+
+                            <Button withIcon onClick={() => this.removeWorkplace(id)}>
+                                <MdHighlightRemove size={20} />
+                            </Button>
                         </ListItemButtons>
                     </ListItem>;
                 })}

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const WorkplaceImageCleanerColorPicker = styled.div`
+export const OcrColorPicker = styled.div`
     position: absolute;
     top: 50%;
     left: 50%;
