@@ -4,7 +4,9 @@ const throttle = require('lodash.throttle');
 import { updateWorkplaces } from './events/helpers/update-workplaces';
 import { WorkplaceWindow } from '../domains/workplace-window';
 
-const createWorkplaceAreaWindow = (app, { id, areaWindow }) => {
+const createWorkplaceAreaWindow = (app, workplace) => {
+    const { id, areaWindow } = workplace;
+    
     let props = {};
     if (areaWindow && areaWindow.rightBottomX) {
         props = {
@@ -62,7 +64,9 @@ const createWorkplaceAreaWindow = (app, { id, areaWindow }) => {
     return window;
 }
 
-const createWorkplaceTranslateWindow = (app, { id, translateWindow, translateByClicK }) => {
+const createWorkplaceTranslateWindow = (app, workplace) => {
+    const { id, translateWindow, translateByClicK } = workplace;
+
     let props = {};
     if (translateWindow && translateWindow.rightBottomX) {
         props = {
@@ -93,7 +97,7 @@ const createWorkplaceTranslateWindow = (app, { id, translateWindow, translateByC
     window.setMenu(null);
 
     window.webContents.once('dom-ready', () => {
-        window.webContents.send('initialize', { id, translateByClicK });
+        window.webContents.send('initialize', workplace);
     });
 
     const updateWindow = throttle(() => {

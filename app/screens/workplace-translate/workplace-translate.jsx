@@ -30,6 +30,7 @@ class WorkplaceTranslate extends React.Component {
             targetText: '',
             textToTranslate: '',
             translateByClicK: !!props.translateByClicK,
+            hideByTitleClick: !!props.hideByTitleClick,
             translateModalVisible: false,
             translatedItems: []
         }
@@ -41,7 +42,8 @@ class WorkplaceTranslate extends React.Component {
             if (workplace) {
                 this.setState({
                     sourceText: workplace.lastParsedText,
-                    translateByClicK: workplace.translateByClicK
+                    translateByClicK: workplace.translateByClicK,
+                    hideByTitleClick: workplace.hideByTitleClick
                 });
             }
         });
@@ -97,7 +99,9 @@ class WorkplaceTranslate extends React.Component {
         return <TranslatePanelWrapper>            
             <Rodal height={80} width={90} measure={'%'} visible={this.state.translateModalVisible} closeOnEsc={true} onClose={this.closeTranslateTextModal}>
                 <Modal>
-                    <ModalHeader>Перевод</ModalHeader>
+                    <ModalHeader onClick={this.state.hideByTitleClick && this.closeTranslateTextModal}>
+                        Перевод
+                    </ModalHeader>
 
                     <ModalBody>
                         <LeoTranslated>
@@ -132,9 +136,9 @@ class WorkplaceTranslate extends React.Component {
     }
 }
 
-ipcRenderer.on('initialize', (event, { id, translateByClicK }) => {
+ipcRenderer.on('initialize', (event, { id, translateByClicK, hideByTitleClick }) => {
     ReactDOM.render(
-        <WorkplaceTranslate id={id} translateByClicK={translateByClicK} />,
+        <WorkplaceTranslate id={id} translateByClicK={translateByClicK} hideByTitleClick={hideByTitleClick} />,
         document.getElementById('app')
     );
 });

@@ -39,7 +39,7 @@ export class Workplaces extends React.Component {
     render() {
         return <div>
             <List>
-                {this.props.workplaces.map(({ id, name, active, translateByClicK, imageCleaner }, i) => {
+                {this.props.workplaces.map(({ id, name, active, translateByClicK, hideByTitleClick, imageCleaner }, i) => {
                     imageCleaner = imageCleaner || {};
                     return <ListItem key={id}>
                         <ListItemContent>
@@ -55,6 +55,7 @@ export class Workplaces extends React.Component {
                                 id={id}
                                 name={name}
                                 translateByClicK={translateByClicK}
+                                hideByTitleClick={hideByTitleClick}
                                 imageCleaner={imageCleaner}
                             />
 

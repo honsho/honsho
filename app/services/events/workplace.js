@@ -56,6 +56,7 @@ export default app => {
             if (workplace) {
                 workplace.name = data.name;
                 workplace.translateByClicK = data.translateByClicK;
+                workplace.hideByTitleClick = data.hideByTitleClick;
                 workplace.imageCleaner = data.imageCleaner;
             }
 

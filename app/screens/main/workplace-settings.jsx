@@ -28,6 +28,7 @@ export class WorkplaceSettings extends React.Component {
             visible: false,
             name: (props.name || ''),
             translateByClicK: !!props.translateByClicK,
+            hideByTitleClick: !!props.hideByTitleClick,
             textColor: imageCleanerOptions.textColor,
             basicErrorDelta: imageCleanerOptions.basicErrorDelta,
             diffErrorDelta: imageCleanerOptions.diffErrorDelta
@@ -51,6 +52,8 @@ export class WorkplaceSettings extends React.Component {
 
     toggleTranslateByClicK = () => this.setState({ translateByClicK: !this.state.translateByClicK });
 
+    toggleHideByTitleClick = () => this.setState({ hideByTitleClick: !this.state.hideByTitleClick });
+
     onOcrSettingChange = (propName, value) => this.setState({ [propName]: value });
 
     save = () => {
@@ -58,6 +61,7 @@ export class WorkplaceSettings extends React.Component {
             id: this.props.id,
             name: this.state.name,
             translateByClicK: this.state.translateByClicK,
+            hideByTitleClick: this.state.hideByTitleClick,
             imageCleaner: {
                 textColor: this.state.textColor,
                 basicErrorDelta: this.state.basicErrorDelta,
@@ -94,6 +98,11 @@ export class WorkplaceSettings extends React.Component {
                                 <FormGroup>
                                     <FormLabel>Переводить по клику</FormLabel>
                                     <input type="checkbox" checked={this.state.translateByClicK} onChange={this.toggleTranslateByClicK} />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <FormLabel>Скрывать окно с переводом при клике по названию окна "Перевод".</FormLabel>
+                                    <input type="checkbox" checked={this.state.hideByTitleClick} onChange={this.toggleHideByTitleClick} />
                                 </FormGroup>
                             </PanelBody>
                         </Panel>
