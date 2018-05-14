@@ -15,9 +15,11 @@ class Main extends React.Component {
     constructor(props) {
         super(props);
 
+        const initData = ipcRenderer.sendSync('mainWindowInit');
+
         this.state = {
             newWorkplaceName: '',
-            workplaces: (props.workplaces || [])
+            workplaces: initData.workplaces
         }
 
         ipcRenderer.on('workplacesUpdate', (event, workplaces) => this.setState({ workplaces: [...workplaces] }));
@@ -80,12 +82,10 @@ class Main extends React.Component {
     }
 }
 
-ipcRenderer.once('initialize', (event, { workplaces, leoInfo }) => {
-    ReactDOM.render(
-        <Main workplaces={workplaces} leoLogin={leoInfo.login} />,
-        document.getElementById('app')
-    );
-});
+ReactDOM.render(
+    <Main />,
+    document.getElementById('app')
+);
 
 window.onerror = function(msg, url, line, col) {
     logger.error(`"${msg}" at ${url} ${line}:${col}`);

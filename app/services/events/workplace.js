@@ -55,6 +55,7 @@ export default app => {
             const workplace = workplaces[data.id];
             if (workplace) {
                 workplace.name = data.name;
+                workplace.translateByClicK = data.translateByClicK;
                 workplace.imageCleaner = data.imageCleaner;
             }
 

@@ -29,18 +29,21 @@ class WorkplaceTranslate extends React.Component {
             sourceText: '',
             targetText: '',
             textToTranslate: '',
+            translateByClicK: !!props.translateByClicK,
             translateModalVisible: false,
             translatedItems: []
         }
 
         this.textRef = React.createRef();
 
-        ipcRenderer.on('textChange', (event, newText) => {
-            if (newText === this.state.text) {
-                return;
+        ipcRenderer.on('workplacesUpdate', (event, workplaces) => {
+            const workplace = workplaces.find(w => w.id == this.props.id);
+            if (workplace) {
+                this.setState({
+                    sourceText: workplace.lastParsedText,
+                    translateByClicK: workplace.translateByClicK
+                });
             }
-
-            this.setState({ sourceText: newText });
         });
         ipcRenderer.on('leoTranslateCompleted', (event, translatedItems) => this.setState({ translatedItems: (translatedItems || []) }));
         ipcRenderer.on('leoAddToDictionaryCompleted', (event, result) => {
@@ -51,7 +54,14 @@ class WorkplaceTranslate extends React.Component {
     }
 
     componentDidMount() {
-        textSelection(this.textRef.current, targetText => this.setState({ targetText: targetText.trim() }));
+        textSelection(this.textRef.current, targetText => {
+            targetText = targetText.trim();
+            this.setState({ targetText });
+
+            if (this.state.translateByClicK && targetText) {
+                this.openTranslateTextModal();
+            }
+        });
     }
 
     onTargetTextChange = e => {
@@ -97,7 +107,7 @@ class WorkplaceTranslate extends React.Component {
                 <TranslatePanelSource withBorder innerRef={this.textRef}>{this.state.sourceText}</TranslatePanelSource>
                 <TranslatePanelActiveContent>
                     <TranslatePanelTarget title="Выделите текст выше, измените его здесь и нажмите на кнопку перевода" value={this.state.targetText} onChange={this.onTargetTextChange} />
-                    <TranslatePanelTranslateButton withIcon onClick={this.openTranslateTextModal}>
+                    <TranslatePanelTranslateButton disabled={!this.state.targetText.trim()} withIcon onClick={this.openTranslateTextModal}>
                         <MdTranslate size={20} />
                     </TranslatePanelTranslateButton>
                 </TranslatePanelActiveContent>
@@ -106,9 +116,9 @@ class WorkplaceTranslate extends React.Component {
     }
 }
 
-ipcRenderer.once('initialize', (event, { id }) => {
+ipcRenderer.on('initialize', (event, { id, translateByClicK }) => {
     ReactDOM.render(
-        <WorkplaceTranslate id={id} />,
+        <WorkplaceTranslate id={id} translateByClicK={translateByClicK} />,
         document.getElementById('app')
     );
 });

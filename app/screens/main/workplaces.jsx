@@ -39,7 +39,7 @@ export class Workplaces extends React.Component {
     render() {
         return <div>
             <List>
-                {this.props.workplaces.map(({ id, name, active, imageCleaner }, i) => {
+                {this.props.workplaces.map(({ id, name, active, translateByClicK, imageCleaner }, i) => {
                     imageCleaner = imageCleaner || {};
                     return <ListItem key={id}>
                         <ListItemContent>
@@ -51,7 +51,12 @@ export class Workplaces extends React.Component {
                                 {active ? <MdVisibility size={20} /> : <MdVisibilityOff size={20} />}
                             </Button>
 
-                            <WorkplaceSettings id={id} name={name} imageCleaner={imageCleaner} />
+                            <WorkplaceSettings
+                                id={id}
+                                name={name}
+                                translateByClicK={translateByClicK}
+                                imageCleaner={imageCleaner}
+                            />
 
                             <Button withIcon onClick={() => this.removeWorkplace(id)}>
                                 <MdHighlightRemove size={20} />

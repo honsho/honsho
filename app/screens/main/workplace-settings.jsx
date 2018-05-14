@@ -27,6 +27,7 @@ export class WorkplaceSettings extends React.Component {
         this.state = {
             visible: false,
             name: (props.name || ''),
+            translateByClicK: !!props.translateByClicK,
             textColor: imageCleanerOptions.textColor,
             basicErrorDelta: imageCleanerOptions.basicErrorDelta,
             diffErrorDelta: imageCleanerOptions.diffErrorDelta
@@ -48,12 +49,15 @@ export class WorkplaceSettings extends React.Component {
 
     onNameChange = e => this.setState({ name: e.target.value });
 
+    toggleTranslateByClicK = () => this.setState({ translateByClicK: !this.state.translateByClicK });
+
     onOcrSettingChange = (propName, value) => this.setState({ [propName]: value });
 
     save = () => {
         const data = {
             id: this.props.id,
             name: this.state.name,
+            translateByClicK: this.state.translateByClicK,
             imageCleaner: {
                 textColor: this.state.textColor,
                 basicErrorDelta: this.state.basicErrorDelta,
@@ -85,6 +89,11 @@ export class WorkplaceSettings extends React.Component {
                                 <FormGroup>
                                     <FormLabel>Название</FormLabel>
                                     <Input type="text" value={this.state.name} onChange={this.onNameChange} />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <FormLabel>Переводить по клику</FormLabel>
+                                    <input type="checkbox" checked={this.state.translateByClicK} onChange={this.toggleTranslateByClicK} />
                                 </FormGroup>
                             </PanelBody>
                         </Panel>

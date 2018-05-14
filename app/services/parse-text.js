@@ -42,12 +42,13 @@ export const parseTextAndUpdateWorkplaces = async (app, id = null) => {
             workplace.lastParsedText = text;
             app.store.set(`workplaces.${workplace.id}`, workplace);
 
-            if (app.windows.workplaces[workplace.id] && app.windows.workplaces[workplace.id].translate) {
-                app.windows.workplaces[workplace.id].translate.send('textChange', workplace.lastParsedText);
-            }
-
             const newWorkplaces = Object.values(app.store.get('workplaces') || {});
+
             app.windows.main.webContents.send('workplacesUpdate', newWorkplaces);
+            const workplaceData = app.windows.workplaces[workplace.id];
+            if (workplaceData && workplaceData.translate) {
+                workplaceData.translate.send('workplacesUpdate', newWorkplaces);
+            }
         }
     }
 }

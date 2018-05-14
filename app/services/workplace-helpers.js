@@ -4,14 +4,14 @@ const throttle = require('lodash.throttle');
 import { updateWorkplaces } from './events/helpers/update-workplaces';
 import { WorkplaceWindow } from '../domains/workplace-window';
 
-const createWorkplaceAreaWindow = (app, id, data) => {
+const createWorkplaceAreaWindow = (app, { id, areaWindow }) => {
     let props = {};
-    if (data && data.rightBottomX) {
+    if (areaWindow && areaWindow.rightBottomX) {
         props = {
-            width: Math.abs(data.rightBottomX - data.leftTopX),
-            height: Math.abs(data.rightBottomY - data.leftTopY),
-            x: data.leftTopX,
-            y: data.leftTopY
+            width: Math.abs(areaWindow.rightBottomX - areaWindow.leftTopX),
+            height: Math.abs(areaWindow.rightBottomY - areaWindow.leftTopY),
+            x: areaWindow.leftTopX,
+            y: areaWindow.leftTopY
         }
     }
 
@@ -62,14 +62,14 @@ const createWorkplaceAreaWindow = (app, id, data) => {
     return window;
 }
 
-const createWorkplaceTranslateWindow = (app, id, data) => {
+const createWorkplaceTranslateWindow = (app, { id, translateWindow, translateByClicK }) => {
     let props = {};
-    if (data && data.rightBottomX) {
+    if (translateWindow && translateWindow.rightBottomX) {
         props = {
-            width: Math.abs(data.rightBottomX - data.leftTopX),
-            height: Math.abs(data.rightBottomY - data.leftTopY),
-            x: data.leftTopX,
-            y: data.leftTopY
+            width: Math.abs(translateWindow.rightBottomX - translateWindow.leftTopX),
+            height: Math.abs(translateWindow.rightBottomY - translateWindow.leftTopY),
+            x: translateWindow.leftTopX,
+            y: translateWindow.leftTopY
         }
     }
 
@@ -93,7 +93,7 @@ const createWorkplaceTranslateWindow = (app, id, data) => {
     window.setMenu(null);
 
     window.webContents.once('dom-ready', () => {
-        window.webContents.send('initialize', { id });
+        window.webContents.send('initialize', { id, translateByClicK });
     });
 
     const updateWindow = throttle(() => {
@@ -139,8 +139,8 @@ export const create = async (app, workplaceData, withWindows = true) => {
 }
 
 export const createWindow = (app, workplace) => {
-    const area = createWorkplaceAreaWindow(app, workplace.id, workplace.areaWindow);
-    const translate = createWorkplaceTranslateWindow(app, workplace.id, workplace.translateWindow);
+    const area = createWorkplaceAreaWindow(app, workplace);
+    const translate = createWorkplaceTranslateWindow(app, workplace);
 
     return { area, translate };
 };
@@ -164,9 +164,6 @@ export const show = (app, id) => {
         if (!app.windows.workplaces[id]) {
             app.windows.workplaces[id] = createWindow(app, workplaces[id]);
         }
-
-        const translateWindow = app.windows.workplaces[id].translate;
-        translateWindow.send('textChange', workplaces[id].lastParsedText);
 
         return Promise.resolve(workplaces);
     });
