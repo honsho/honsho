@@ -16,48 +16,33 @@ export class OcrSettingsPanel extends React.Component {
     constructor(props) {
         super(props);
 
-        const startColor = (props.color || DEFAULT_WORKPLACE_TEXT_COLOR);
-
         this.state = {
-            enabled: !!props.color,
-            color: startColor,
-            pickerColor: startColor,
-            pickerVisible: false,
-            basicErrorDelta: (props.basicErrorDelta || 0),
-            diffErrorDelta: (props.diffErrorDelta || 0)
-        }
+            enabled: !!props.textColor,
+            pickerColor: (props.textColor || DEFAULT_WORKPLACE_TEXT_COLOR),
+            pickerVisible: false
+        };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (!shallowEqualObjects(this.props.color || {}, nextProps.color || {})) {
-            this.setState({ color: nextProps.color });
-        }
-        if (this.props.basicErrorDelta != nextProps.basicErrorDelta) {
-            this.setState({ basicErrorDelta: nextProps.basicErrorDelta });
-        }
-        if (this.props.diffErrorDelta != nextProps.diffErrorDelta) {
-            this.setState({ diffErrorDelta: nextProps.diffErrorDelta });
+        if (!shallowEqualObjects(this.props.textColor || {}, nextProps.textColor || {})) {
+            this.setState({ enabled: !!nextProps.textColor });
         }
     }
 
-    onChange = (data = {}, enabled = this.state.enabled) => {
-        data = {
-            color: this.state.color,
-            basicErrorDelta: this.state.basicErrorDelta,
-            diffErrorDelta: this.state.diffErrorDelta,
-            ...data
-        };
+    onChange = (propName, value) => {
+        if (!this.state.enabled) {
+            value = null;
+        }
 
-        data.color = enabled ? data.color: null;
-        data.basicErrorDelta = enabled ? data.basicErrorDelta: null;
-        data.diffErrorDelta = enabled ? data.diffErrorDelta: null;
-
-        this.props.onChange && this.props.onChange(data);
+        this.props.onChange && this.props.onChange(propName, value);
     }
 
     onToggle = () => {
-        this.onChange({}, !this.state.enabled);
-        this.setState({ enabled: !this.state.enabled });
+        this.setState({ enabled: !this.state.enabled }, () => {
+            this.onChange('textColor', this.props.textColor || DEFAULT_WORKPLACE_TEXT_COLOR);
+            this.onChange('basicErrorDelta', this.props.basicErrorDelta || 0);
+            this.onChange('diffErrorDelta', this.props.diffErrorDelta || 0);
+        });
     }
 
     setPickerColor = value => {
@@ -66,13 +51,12 @@ export class OcrSettingsPanel extends React.Component {
     }
 
     onPickerColorAccept = () => {
-        this.onChange({ color: this.state.pickerColor });
-        this.setState({ color: this.state.pickerColor });
+        this.onChange('textColor', this.state.pickerColor);
         this.hideColorPicker();
     }
 
     showColorPicker = () => {
-        this.setState({ pickerVisible: true, pickerColor: this.state.color });
+        this.setState({ pickerVisible: true, pickerColor: this.props.textColor });
     }
 
     hideColorPicker = () => {
@@ -81,14 +65,12 @@ export class OcrSettingsPanel extends React.Component {
 
     onBasicErrorDeltaChange = e => {
         const basicErrorDelta = parseInt(e.target.value) || 0;
-        this.onChange({ basicErrorDelta });
-        this.setState({ basicErrorDelta });
+        this.onChange('basicErrorDelta', basicErrorDelta);
     }
 
     onDiffErrorDeltaChange = e => {
         const diffErrorDelta = parseInt(e.target.value) || 0;
-        this.onChange({ diffErrorDelta });
-        this.setState({ diffErrorDelta });
+        this.onChange('diffErrorDelta', diffErrorDelta);
     }
 
     render() {
@@ -112,13 +94,13 @@ export class OcrSettingsPanel extends React.Component {
 
                 {this.state.enabled && <FormGroup>
                     <FormLabel>Цвет текста</FormLabel>
-                    <OcrColorItem color={this.state.color} onClick={this.showColorPicker} />
+                    <OcrColorItem color={this.props.textColor || DEFAULT_WORKPLACE_TEXT_COLOR} onClick={this.showColorPicker} />
                 </FormGroup>}
 
                 {this.state.enabled && <FormGroup>
                     <FormLabel>Отклонение цвета текста при поиске по цвету текста</FormLabel>
                     <OcrErrorDelta 
-                        value={this.state.basicErrorDelta}
+                        value={this.props.basicErrorDelta || 0}
                         onChange={this.onBasicErrorDeltaChange}
                     />
                 </FormGroup>}
@@ -126,7 +108,7 @@ export class OcrSettingsPanel extends React.Component {
                 {this.state.enabled && <FormGroup>
                     <FormLabel>Отклонение цвета текста при поиске соседних пикселей в найденном</FormLabel>
                     <OcrErrorDelta 
-                        value={this.state.diffErrorDelta}
+                        value={this.props.diffErrorDelta || 0}
                         onChange={this.onDiffErrorDeltaChange}
                     />
                 </FormGroup>}

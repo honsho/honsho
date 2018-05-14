@@ -20,7 +20,7 @@ export const parseText = ({ leftTopX, leftTopY, rightBottomX, rightBottomY }, op
     });
 };
 
-export const parseAndUpdateWorkplaces = async (app, id = null) => {
+export const parseTextAndUpdateWorkplaces = async (app, id = null) => {
     let workplaces = app.store.get('workplaces') || {};
     if (workplaces[id]) {
         workplaces = [workplaces[id]];
@@ -33,7 +33,7 @@ export const parseAndUpdateWorkplaces = async (app, id = null) => {
             return;
         }
 
-        const text = await parseText(getCoordsFromAreaWindow(workplace.area), {
+        const text = await parseText(getCoordsFromAreaWindow(workplace.areaWindow), {
             imageCleaner: workplace.imageCleaner
         });
         workplace = app.store.get(`workplaces.${workplace.id}`);
@@ -42,8 +42,12 @@ export const parseAndUpdateWorkplaces = async (app, id = null) => {
             workplace.lastParsedText = text;
             app.store.set(`workplaces.${workplace.id}`, workplace);
 
+            if (app.windows.workplaces[workplace.id] && app.windows.workplaces[workplace.id].translate) {
+                app.windows.workplaces[workplace.id].translate.send('textChange', workplace.lastParsedText);
+            }
+
             const newWorkplaces = Object.values(app.store.get('workplaces') || {});
-            app.mainWindow && app.mainWindow.webContents.send('workplacesUpdate', newWorkplaces);
+            app.windows.main.webContents.send('workplacesUpdate', newWorkplaces);
         }
     }
 }

@@ -3,7 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Rodal from 'rodal';
 import 'rodal/lib/rodal.css';
-import { WorkplaceHelper } from './../../services/workplace-helper';
 import { LeoLogin } from './../../components/leo-login/leo-login';
 import { LeoLoginInput } from './../../components/leo-login/leo-login-input';
 import { Button } from './../../components/button';

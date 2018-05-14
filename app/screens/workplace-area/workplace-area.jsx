@@ -1,7 +1,6 @@
 const { remote } = require('electron');
 import React from 'react';
 import ReactDOM from 'react-dom';
-import styled from 'styled-components';
 import { logger } from './../../services/logger';
 import { DraggableArea } from './../../components/draggable-area';
 import { WorkplaceAreaWrapper } from './../../components/workplace-area/workplace-area-wrapper';

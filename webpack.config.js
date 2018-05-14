@@ -5,7 +5,7 @@ module.exports = {
         './app/bundle': './app/index.js',
         './app/screens/main/dist/bundle': './app/screens/main/main.jsx',
         './app/screens/workplace-area/dist/bundle': './app/screens/workplace-area/workplace-area.jsx',
-        './app/screens/workplace-text/dist/bundle': './app/screens/workplace-text/workplace-text.jsx'
+        './app/screens/workplace-translate/dist/bundle': './app/screens/workplace-translate/workplace-translate.jsx'
     },
     output: {
         filename: '[name].js',
@@ -16,6 +16,7 @@ module.exports = {
         __dirname: true,
         __filename: true,
     },
+    devtool: 'inline-source-map',
     module: {
         rules: [{
             test: /\.jsx?$/,

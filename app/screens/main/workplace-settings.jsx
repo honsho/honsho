@@ -2,6 +2,7 @@ const { ipcRenderer } = require('electron');
 import React from 'react';
 import Rodal from 'rodal';
 import 'rodal/lib/rodal.css';
+const shallowEqualObjects = require('shallow-equal/objects');
 import MdSettings from 'react-icons/lib/md/settings';
 import { Button } from './../../components/button';
 import { Modal } from '../../components/modal/modal';
@@ -15,6 +16,7 @@ import { FormGroup } from '../../components/form/form-group';
 import { FormLabel } from '../../components/form/form-label';
 import { OcrSettingsPanel } from './../../components/ocr-settings-panel/ocr-settings-panel.jsx';
 import { DEFAULT_WORKPLACE_TEXT_COLOR } from './../../constants';
+import { Input } from '../../components/input';
 
 export class WorkplaceSettings extends React.Component {
     constructor(props) {
@@ -24,14 +26,34 @@ export class WorkplaceSettings extends React.Component {
 
         this.state = {
             visible: false,
-            textColor: (imageCleanerOptions.textColor || DEFAULT_WORKPLACE_TEXT_COLOR),
-            basicErrorDelta: (imageCleanerOptions.basicErrorDelta || 0),
-            diffErrorDelta: (imageCleanerOptions.diffErrorDelta || 0)
+            name: (props.name || ''),
+            textColor: imageCleanerOptions.textColor,
+            basicErrorDelta: imageCleanerOptions.basicErrorDelta,
+            diffErrorDelta: imageCleanerOptions.diffErrorDelta
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (!shallowEqualObjects(this.props.textColor || {}, nextProps.textColor || {})) {
+            this.setState({ textColor: nextProps.textColor });
+        }
+
+        const propsToCheck = ['basicErrorDelta', 'diffErrorDelta'];
+        propsToCheck.forEach(propName => {
+            if (this.props[propName] != nextProps[propName]) {
+                this.setState({ [propName]: nextProps[propName] });
+            }
+        });
+    }
+
+    onNameChange = e => this.setState({ name: e.target.value });
+
+    onOcrSettingChange = (propName, value) => this.setState({ [propName]: value });
+
     save = () => {
         const data = {
+            id: this.props.id,
+            name: this.state.name,
             imageCleaner: {
                 textColor: this.state.textColor,
                 basicErrorDelta: this.state.basicErrorDelta,
@@ -57,7 +79,21 @@ export class WorkplaceSettings extends React.Component {
                     <ModalHeader>Настройки рабочей области</ModalHeader>
 
                     <ModalBody>
-                        <OcrSettingsPanel />
+                        <Panel>
+                            <PanelTitle>Основное</PanelTitle>
+                            <PanelBody>
+                                <FormGroup>
+                                    <FormLabel>Название</FormLabel>
+                                    <Input type="text" value={this.state.name} onChange={this.onNameChange} />
+                                </FormGroup>
+                            </PanelBody>
+                        </Panel>
+
+                        <OcrSettingsPanel
+                            textColor={this.state.textColor}
+                            basicErrorDelta={this.state.basicErrorDelta}
+                            diffErrorDelta={this.state.diffErrorDelta}
+                            onChange={this.onOcrSettingChange} />
                     </ModalBody>
 
                     <ModalFooter>

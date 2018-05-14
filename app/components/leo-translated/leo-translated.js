@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 
-export const LeoTranslated = styled.ul`
+export const LeoTranslated = styled.div`
     box-sizing: border-box;
     padding: 10px 0;
-    height: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

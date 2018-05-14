@@ -17,8 +17,11 @@ import { LeoTranslated } from './../../components/leo-translated/leo-translated'
 import { LeoTranslatedItem } from './../../components/leo-translated/leo-translated-item';
 import { LeoTranslatedItemText } from './../../components/leo-translated/leo-translated-item-text';
 import { LeoTranslatedItemVoices } from './../../components/leo-translated/leo-translated-item-voices';
+import { Modal } from '../../components/modal/modal';
+import { ModalHeader } from '../../components/modal/modal-header';
+import { ModalBody } from '../../components/modal/modal-body';
 
-class WorkplaceText extends React.Component {
+class WorkplaceTranslate extends React.Component {
     constructor(props) {
         super(props);
 
@@ -65,6 +68,7 @@ class WorkplaceText extends React.Component {
     }
 
     addToDictionary(translatedText) {
+        this.setState({ targetText: '' });
         ipcRenderer.send('leoAddToDictionary', { text: this.state.textToTranslate, translatedText });
         this.closeTranslateTextModal();
     }
@@ -72,14 +76,20 @@ class WorkplaceText extends React.Component {
     render() {
         return <TranslatePanelWrapper>            
             <Rodal height={80} width={90} measure={'%'} visible={this.state.translateModalVisible} closeOnEsc={true} onClose={this.closeTranslateTextModal}>
-                <LeoTranslated>
-                    {this.state.translatedItems.map(item => {
-                        return <LeoTranslatedItem onClick={() => this.addToDictionary(item.value)}>
-                            <LeoTranslatedItemText>{item.value}</LeoTranslatedItemText>
-                            <LeoTranslatedItemVoices>{item.votes}</LeoTranslatedItemVoices>
-                        </LeoTranslatedItem>
-                    })}
-                </LeoTranslated>
+                <Modal>
+                    <ModalHeader>Перевод</ModalHeader>
+
+                    <ModalBody>
+                        <LeoTranslated>
+                            {this.state.translatedItems.map(item => {
+                                return <LeoTranslatedItem onClick={() => this.addToDictionary(item.value)}>
+                                    <LeoTranslatedItemText>{item.value}</LeoTranslatedItemText>
+                                    <LeoTranslatedItemVoices>{item.votes}</LeoTranslatedItemVoices>
+                                </LeoTranslatedItem>
+                            })}
+                        </LeoTranslated>
+                    </ModalBody>
+                </Modal>
             </Rodal>
 
             <DraggableArea />
@@ -98,7 +108,7 @@ class WorkplaceText extends React.Component {
 
 ipcRenderer.once('initialize', (event, { id }) => {
     ReactDOM.render(
-        <WorkplaceText id={id} />,
+        <WorkplaceTranslate id={id} />,
         document.getElementById('app')
     );
 });

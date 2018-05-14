@@ -2,11 +2,12 @@ const { ipcMain, globalShortcut } = require('electron');
 const { spawn } = require('child_process');
 import { Store } from './store';
 import { Lingualeo } from './lingualeo';
-import { parseAndUpdateWorkplaces } from './../services/parse-text';
+import { parseTextAndUpdateWorkplaces } from './../services/parse-text';
 import { logger } from './../services/logger';
 import leoEvents from './../services/events/leo';
 import parserEvents from './../services/events/parser';
 import workplaceEvents from './../services/events/workplace';
+import { createWindow } from './workplace-helpers';
 
 export class App {
     constructor() {
@@ -17,7 +18,7 @@ export class App {
     }
 
     initialize(mainWindow) {
-        this.mainWindow = mainWindow;
+        this.createWindows(mainWindow);
 
         this.login();
 
@@ -25,9 +26,27 @@ export class App {
         this.registerShortcuts();
     }
 
+    createWindows(main) {
+        main.on('closed', e => delete this.windows.main);
+
+        const workplaces = Object.values(this.store.get('workplaces') || {});
+        const workplacesWindows = {};
+        workplaces.forEach(workplace => {
+            if (workplace.active) {
+                const window = createWindow(this, workplace);
+                workplacesWindows[workplace.id] = window;
+            }
+        });
+
+        this.windows = {
+            main,
+            workplaces: workplacesWindows
+        };
+    }
+
     async login() {
         const result = await Lingualeo.login(this.store.get('leo.login'), this.store.get('leo.password'));
-        this.mainWindow.send('leoLoginCompleted', result);
+        this.windows.main.send('leoLoginCompleted', result);
     }
 
     registerEvents() {
@@ -37,6 +56,6 @@ export class App {
     }
 
     registerShortcuts() {
-        globalShortcut.register('Alt+R', async () => await parseAndUpdateWorkplaces(this));
+        globalShortcut.register('Alt+R', async () => await parseTextAndUpdateWorkplaces(this));
     }
 }

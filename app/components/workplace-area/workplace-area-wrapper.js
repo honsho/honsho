@@ -9,10 +9,4 @@ export const WorkplaceAreaWrapper = styled.div`
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    opacity: 0.5;
-    transition: opacity 0.2s ease-in-out;
-
-    &:hover {
-        opacity: 1;
-    }
 `;

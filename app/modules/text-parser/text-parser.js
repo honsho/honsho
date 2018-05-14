@@ -6,11 +6,11 @@ const screenshot = require('desktop-screenshot');
 const imageCleaner = require('./image-cleaner');
 
 const cleanTempImage = imagePath => {
-    // fs.stat(imagePath, (error, stats) => {
-    //     if (!error) {
-    //         fs.unlink(imagePath, () => {});
-    //     }
-    // });
+    fs.stat(imagePath, (error, stats) => {
+        if (!error) {
+            fs.unlink(imagePath, () => {});
+        }
+    });
 }
 
 const parse = (imagePath, { leftTopX, leftTopY, rightBottomX, rightBottomY }, options = {}) => {

@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom';
 import MdSettingsApplications from 'react-icons/lib/md/settings-applications';
 import MdAddBox from 'react-icons/lib/md/add-box';
 import { logger } from './../../services/logger';
-import { createWorkplaceWindows } from './../../services/create-workplace-windows';
-import { WorkplaceHelper } from './../../services/workplace-helper';
 import { Button } from './../../components/button';
 import { Header } from './../../components/main/header';
 import { Workplaces } from './workplaces.jsx';
@@ -22,14 +20,7 @@ class Main extends React.Component {
             workplaces: (props.workplaces || [])
         }
 
-        this.workplacesWindows = {};
-        this.state.workplaces.forEach(workplace => {
-            const window = createWorkplaceWindows(workplace);
-            this.workplacesWindows[window.id] = window;
-        });
-
-        ipcRenderer.on('workplacesUpdate', (event, workplaces) => this.updateWorkplaces(workplaces));
-        ipcRenderer.on('removeWorkplace', (event, id) => this.removeWorkplaceWindow(id));
+        ipcRenderer.on('workplacesUpdate', (event, workplaces) => this.setState({ workplaces: [...workplaces] }));
         ipcRenderer.on('leoLoginCompleted', (event, result) => {
             if (!result) {
                 alert('Невозможно залогиниться в LinguaLeo', 'Ошибка');
@@ -48,33 +39,6 @@ class Main extends React.Component {
         }
 
         this.setState({ newWorkplaceName: '' });
-    }
-
-    updateWorkplaces = workplaces => {
-        workplaces.forEach(workplace => {
-            let workplaceWindow = this.workplacesWindows[workplace.id];
-            if (!workplaceWindow) {
-                workplaceWindow = createWorkplaceWindows(workplace);
-                this.workplacesWindows[workplace.id] = workplaceWindow;
-            }
-
-            workplaceWindow.text.send('textChange', workplace.lastParsedText);
-
-            if (workplace.active) {
-                WorkplaceHelper.showWindows(workplaceWindow);
-            } else {
-                WorkplaceHelper.hideWindows(workplaceWindow);
-            }
-        });
-
-        this.setState({ workplaces: [...workplaces] });
-    }
-
-    removeWorkplaceWindow = id => {
-        if (this.workplacesWindows[id]) {
-            WorkplaceHelper.closeWindows(this.workplacesWindows[id]);
-            delete this.workplacesWindows[id];
-        }
     }
 
     showSettings = () => this.setState({ settingsVisible: true });

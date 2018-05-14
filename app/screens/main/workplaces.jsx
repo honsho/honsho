@@ -4,7 +4,6 @@ import React from 'react';
 import MdHighlightRemove from 'react-icons/lib/md/highlight-remove';
 import MdVisibility from 'react-icons/lib/md/visibility';
 import MdVisibilityOff from 'react-icons/lib/md/visibility-off';
-import { WorkplaceHelper } from './../../services/workplace-helper';
 import { Button } from './../../components/button';
 import { List } from './../../components/list/list';
 import { ListItem } from './../../components/list/list-item';
@@ -21,7 +20,7 @@ export class Workplaces extends React.Component {
     }
 
     toggleWorkplace = id => {
-        const workplace = WorkplaceHelper.findById(this.props.workplaces, id);
+        const workplace = this.props.workplaces.find(workplace => workplace.id == id);
         if (!workplace) {
             return;
         }
@@ -52,7 +51,7 @@ export class Workplaces extends React.Component {
                                 {active ? <MdVisibility size={20} /> : <MdVisibilityOff size={20} />}
                             </Button>
 
-                            <WorkplaceSettings />
+                            <WorkplaceSettings id={id} name={name} imageCleaner={imageCleaner} />
 
                             <Button withIcon onClick={() => this.removeWorkplace(id)}>
                                 <MdHighlightRemove size={20} />

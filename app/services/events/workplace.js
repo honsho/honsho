@@ -2,20 +2,29 @@ const { ipcMain } = require('electron');
 import { Workplace } from './../../domains/workplace';
 import { WorkplaceWindow } from './../../domains/workplace-window';
 import { Lingualeo } from './../lingualeo';
-import { updateWorkplaces } from './../update-workplaces';
+import { updateWorkplaces } from './helpers/update-workplaces';
+import { createWindow, closeWindow } from '../workplace-helpers';
+import { show, hide } from './../../services/workplace-helpers';
 
 export default app => {
     ipcMain.on('createWorkplace', (event, data = {}) => {
-        updateWorkplaces(app, workplaces => {
-            if (typeof data.id === 'undefined') {
-                const maxId = Math.max(...Object.keys(app.store.get('workplaces') || { 0: true }));
-                data.id = Number.isFinite(maxId) ? (maxId + 1) : 1;
-            }
-            data.active = true;
+        if (typeof data.id === 'undefined') {
+            const maxId = Math.max(...Object.keys(app.store.get('workplaces') || { 0: true }));
+            data.id = Number.isFinite(maxId) ? (maxId + 1) : 1;
+        }
+        data.active = true;
 
-            workplaces[data.id] = new Workplace(data);
+        event.returnValue = new Promise(resolve => {
+            updateWorkplaces(app, workplaces => {
+                workplaces[data.id] = new Workplace(data);
+                return Promise.resolve(workplaces);
+            }, workplaces => {
+                resolve(workplaces[data.id]);
 
-            return Promise.resolve(workplaces);
+                if (!app.windows.workplaces[data.id]) {
+                    app.windows.workplaces[data.id] = createWindow(app, workplaces[data.id]);
+                }
+            });
         });
     });
 
@@ -28,45 +37,25 @@ export default app => {
                 }
             }
 
-            app.mainWindow.webContents.send('removeWorkplace', id);
+            const workplaceWindow = app.windows.workplaces[id]
+            if (workplaceWindow) {
+                closeWindow(workplaceWindow);
+                delete app.windows.workplaces[id];
+            }
+
             return Promise.resolve(newWorkplaces);
         });
     });
 
-    ipcMain.on('changeWorkplaceArea', (event, { id, areaData }) => {
-        updateWorkplaces(app, workplaces => {
-            if (workplaces[id]) {
-                workplaces[id].area = new WorkplaceWindow(areaData);
-            }
+    ipcMain.on('showWorkplace', (event, id) => show(app, id));
+    ipcMain.on('hideWorkplace', (event, id) => hide(app, id));
 
-            return Promise.resolve(workplaces);
-        });
-    });
-    
-    ipcMain.on('changeWorkplaceText', (event, { id, textData }) => {
+    ipcMain.on('saveWorkplaceSettings', (event, data) => {
         updateWorkplaces(app, workplaces => {
-            if (workplaces[id]) {
-                workplaces[id].text = new WorkplaceWindow(textData);
-            }
-
-            return Promise.resolve(workplaces);
-        });
-    });
-
-    ipcMain.on('showWorkplace', (event, id) => {
-        updateWorkplaces(app, workplaces => {
-            if (workplaces[id]) {
-                workplaces[id].active = true;
-            }
-
-            return Promise.resolve(workplaces);
-        });
-    });
-    
-    ipcMain.on('hideWorkplace', (event, id) => {
-        updateWorkplaces(app, workplaces => {
-            if (workplaces[id]) {
-                workplaces[id].active = false;
+            const workplace = workplaces[data.id];
+            if (workplace) {
+                workplace.name = data.name;
+                workplace.imageCleaner = data.imageCleaner;
             }
 
             return Promise.resolve(workplaces);

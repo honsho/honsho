@@ -7,16 +7,16 @@ export default app => {
         app.store.set('leo.password', password);
 
         const result = await Lingualeo.login(login, password);
-        app.mainWindow.send('leoLoginCompleted', result);
+        app.windows.main.send('leoLoginCompleted', result);
     });
 
     ipcMain.on('leoTranslate', async (event, text) => {
         const translatedItems = await Lingualeo.translate(text);
-        event.sender.send('leoTranslateCompleted', translatedItems);
+        event.sender && event.sender.send('leoTranslateCompleted', translatedItems);
     });
 
     ipcMain.on('leoAddToDictionary', async (event, { text, translatedText }) => {
         const result = await Lingualeo.addToDictionary(text, translatedText);
-        event.sender.send('leoAddToDictionaryCompleted', result);
+        event.sender && event.sender.send('leoAddToDictionaryCompleted', result);
     });
 };
