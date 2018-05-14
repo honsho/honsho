@@ -64,8 +64,18 @@ class WorkplaceTranslate extends React.Component {
         });
     }
 
-    onTargetTextChange = e => {
-        this.setState({ targetText: e.target.value });
+    onTargetTextChange = e => this.setState({ targetText: e.target.value });
+
+    onTargetKeyDown = e => {
+        if (e.which == 13 && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            e.preventDefault();
+        }
+    }
+
+    onTargetKeyUp = e => {
+        if (e.which == 13 && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            this.openTranslateTextModal();
+        }
     }
 
     openTranslateTextModal = async () => {
@@ -106,7 +116,13 @@ class WorkplaceTranslate extends React.Component {
             <TranslatePanel>
                 <TranslatePanelSource withBorder innerRef={this.textRef}>{this.state.sourceText}</TranslatePanelSource>
                 <TranslatePanelActiveContent>
-                    <TranslatePanelTarget title="Выделите текст выше, измените его здесь и нажмите на кнопку перевода" value={this.state.targetText} onChange={this.onTargetTextChange} />
+                    <TranslatePanelTarget 
+                        title="Выделите текст выше, измените его здесь и нажмите на кнопку перевода"
+                        value={this.state.targetText}
+                        onChange={this.onTargetTextChange}
+                        onKeyDown={this.onTargetKeyDown}
+                        onKeyUp={this.onTargetKeyUp}
+                    />
                     <TranslatePanelTranslateButton disabled={!this.state.targetText.trim()} withIcon onClick={this.openTranslateTextModal}>
                         <MdTranslate size={20} />
                     </TranslatePanelTranslateButton>
