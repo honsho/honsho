@@ -1,6 +1,5 @@
 const { ipcRenderer } = require('electron');
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Rodal from 'rodal';
 import 'rodal/lib/rodal.css';
 import { LeoLogin } from './../../components/leo-login/leo-login';
@@ -15,28 +14,30 @@ export class Settings extends React.Component {
     constructor(props) {
         super(props);
 
+        const { leo } = ipcRenderer.sendSync('getSettings');
+
         this.state = {
-            leoLogin: (props.leoLogin || ''),
-            leoPassword: ''
+            leoLogin: (leo.login || ''),
+            leoPassword: (leo.password || '')
         }
     }
 
-    onLeoLoginChange(e) {
+    onLeoLoginChange = (e) => {
         const leoLogin = e.target.value.trim();
         this.setState({ leoLogin });
     }
 
-    onLeoPasswordChange(e) {
+    onLeoPasswordChange = (e) => {
         const leoPassword = e.target.value;
         this.setState({ leoPassword });
     }
 
-    save() {
+    save = () => {
         ipcRenderer.send('leoLogin', { login: this.state.leoLogin, password: this.state.leoPassword });
         this.props.onClose && this.props.onClose();
     }
 
-    cancel() {
+    cancel = () => {
         this.props.onClose && this.props.onClose();
     }
 
@@ -52,20 +53,20 @@ export class Settings extends React.Component {
                             placeholder="Лингвалео логин"
                             marginRight
                             value={this.state.leoLogin}
-                            onChange={(e) => this.onLeoLoginChange(e)}
+                            onChange={this.onLeoLoginChange}
                         />
                         <LeoLoginInput
                             type="password"
                             placeholder="Лингвалео пароль"
                             value={this.state.leoPassword}
-                            onChange={(e) => this.onLeoPasswordChange(e)}
+                            onChange={this.onLeoPasswordChange}
                         />
                     </LeoLogin>
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button onClick={() => this.save()}>Сохранить</Button>
-                    <Button onClick={() => this.cancel()}>Отмена</Button>
+                    <Button onClick={this.save}>Сохранить</Button>
+                    <Button onClick={this.cancel}>Отмена</Button>
                 </ModalFooter>
             </Modal>
         </Rodal>

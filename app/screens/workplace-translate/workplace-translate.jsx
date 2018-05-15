@@ -58,11 +58,11 @@ class WorkplaceTranslate extends React.Component {
     componentDidMount() {
         textSelection(this.textRef.current, targetText => {
             targetText = targetText.trim();
-            this.setState({ targetText });
-
-            if (this.state.translateByClicK && targetText) {
-                this.openTranslateTextModal();
-            }
+            this.setState({ targetText }, () => {
+                if (this.state.translateByClicK) {
+                    this.openTranslateTextModal();
+                }
+            });
         });
     }
 
@@ -81,7 +81,12 @@ class WorkplaceTranslate extends React.Component {
     }
 
     openTranslateTextModal = async () => {
-        this.setState({ translateModalVisible: true, textToTranslate: this.state.targetText });
+        const textToTranslate = this.state.targetText.trim();
+        if (!textToTranslate) {
+            return;
+        }
+
+        this.setState({ translateModalVisible: true, textToTranslate });
         ipcRenderer.send('leoTranslate', this.state.targetText);
     }
 

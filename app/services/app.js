@@ -4,6 +4,7 @@ import { Store } from './store';
 import { Lingualeo } from './lingualeo';
 import { parseTextAndUpdateWorkplaces } from './../services/parse-text';
 import { logger } from './../services/logger';
+import settingsEvents from './../services/events/settings';
 import windowsEvents from './../services/events/windows';
 import leoEvents from './../services/events/leo';
 import parserEvents from './../services/events/parser';
@@ -51,6 +52,7 @@ export class App {
     }
 
     registerEvents() {
+        settingsEvents(this);
         windowsEvents(this);
         leoEvents(this);
         parserEvents(this);

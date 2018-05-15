@@ -3,6 +3,7 @@ const path = require('path');
 const url = require('url');
 import { App } from './services/app';
 import { isProd } from './services/is-prod';
+import { createMenu } from './services/menu';
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({ width: 500, height: 500, show: false });
@@ -32,12 +33,11 @@ const createWindow = () => {
             application.store.set(`workplaces.${workplace.id}`, workplace);
         });
 
-        const leoInfo = application.store.get('leo') || {};
-
-        mainWindow.webContents.send('initialize', { workplaces, leoInfo });
+        mainWindow.webContents.send('initialize', { workplaces });
     });
 
     mainWindow.on('closed', () => app.quit());
+    
 }
 
 app.on('ready', createWindow);

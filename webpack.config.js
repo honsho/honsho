@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        './app/bundle': './app/index.js',
+        './app/bundle': './app/main.js',
         './app/screens/main/dist/bundle': './app/screens/main/main.jsx',
         './app/screens/workplace-area/dist/bundle': './app/screens/workplace-area/workplace-area.jsx',
         './app/screens/workplace-translate/dist/bundle': './app/screens/workplace-translate/workplace-translate.jsx'

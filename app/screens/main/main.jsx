@@ -6,10 +6,9 @@ import MdAddBox from 'react-icons/lib/md/add-box';
 import { logger } from './../../services/logger';
 import { Button } from './../../components/button';
 import { Header } from './../../components/main/header';
-import { Workplaces } from './workplaces.jsx';
-import { Settings } from './settings.jsx';
-import { AddNewWorkplace } from '../../components/main/add-new-workplace';
-import { Input } from '../../components/input';
+import { WorkplacesList } from './../../components/main/workplaces-list.jsx';
+import { Settings } from './../../components/main/settings.jsx';
+import { WorkplacesGroupCreateModal } from '../../components/main/workplaces-group-create-modal.jsx';
 
 class Main extends React.Component {
     constructor(props) {
@@ -18,11 +17,13 @@ class Main extends React.Component {
         const initData = ipcRenderer.sendSync('mainWindowInit');
 
         this.state = {
-            newWorkplaceName: '',
-            workplaces: initData.workplaces
+            workplaces: initData.workplaces,
+            workplaceGroups: initData.workplaceGroups,
+            settingsVisible: false,
+            createGroupModalVisible: false
         }
 
-        ipcRenderer.on('workplacesUpdate', (event, workplaces) => this.setState({ workplaces: [...workplaces] }));
+        ipcRenderer.on('workplacesUpdate', (event, { workplaces, workplaceGroups }) => this.setState({ workplaces, workplaceGroups }));
         ipcRenderer.on('leoLoginCompleted', (event, result) => {
             if (!result) {
                 alert('Невозможно залогиниться в LinguaLeo', 'Ошибка');
@@ -30,54 +31,35 @@ class Main extends React.Component {
         });
     }
 
-    changeNewWorkplaceName = e => this.setState({ newWorkplaceName: e.target.value });
-
-    createWorkplace = e => {
-        e.preventDefault();
-
-        const name = this.state.newWorkplaceName.trim();
-        if (name) {
-            ipcRenderer.send('createWorkplace', { name });
-        }
-
-        this.setState({ newWorkplaceName: '' });
-    }
+    showCreateGroupModal = () => this.setState({ createGroupModalVisible: true });
+    hideCreateGroupModal = () => this.setState({ createGroupModalVisible: false });
 
     showSettings = () => this.setState({ settingsVisible: true });
     hideSettings = () => this.setState({ settingsVisible: false });
 
     render() {
         return <div>
+            <WorkplacesGroupCreateModal
+                visible={this.state.createGroupModalVisible}
+                onClose={this.hideCreateGroupModal}
+            />
+
             <Settings 
                 visible={this.state.settingsVisible}
                 onClose={this.hideSettings}
-                leoLogin={this.state.leoLogin}
             />
 
             <Header>
-                <AddNewWorkplace>
-                    <form onSubmit={this.createWorkplace}>
-                        <Input
-                            type="text"
-                            placeholder="Название"
-                            value={this.state.newWorkplaceName} onChange={this.changeNewWorkplaceName} 
-                        />
-                        <Button
-                            withIcon
-                            disabled={!this.state.newWorkplaceName.trim()}
-                            type="submit"
-                            title="Добавить новую рабочую область">
-                            <MdAddBox size={27} />
-                        </Button>
-                    </form>
-                </AddNewWorkplace>
+                <Button withIcon title="Добавить новую группу" onClick={this.showCreateGroupModal}>
+                    <MdAddBox size={27} />
+                </Button>
 
-                <Button withIcon onClick={this.showSettings}>
+                <Button withIcon title="Настройки приложения" onClick={this.showSettings}>
                     <MdSettingsApplications size={27} />
                 </Button>
             </Header>
 
-            <Workplaces workplaces={this.state.workplaces} />
+            <WorkplacesList workplaces={this.state.workplaces} workplaceGroups={this.state.workplaceGroups} />
         </div>
     }
 }

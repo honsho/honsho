@@ -2,8 +2,9 @@ import { WorkplaceWindow } from './workplace-window';
 
 export class Workplace {
     constructor({ 
-        id, 
-        name, 
+        id,
+        groupId,
+        title, 
         active, 
         translateByClicK, 
         hideByTitleClick, 
@@ -13,7 +14,8 @@ export class Workplace {
         translateWindow
     }) {
         this.id = id;
-        this.name = name || '';
+        this.groupId = groupId;
+        this.title = title || '';
         this.active = active || false;
         this.translateByClicK = !!translateByClicK;
         this.hideByTitleClick = !!hideByTitleClick;

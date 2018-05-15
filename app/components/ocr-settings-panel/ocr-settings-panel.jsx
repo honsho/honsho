@@ -87,17 +87,17 @@ export class OcrSettingsPanel extends React.Component {
                     />
                 </OcrColorPicker>}
 
-                <FormGroup>
+                <FormGroup inline>
                     <FormLabel>Включить улучшенное распознавание текста</FormLabel>
                     <input type="checkbox" onChange={this.onToggle} checked={this.state.enabled} />
                 </FormGroup>
 
-                {this.state.enabled && <FormGroup>
+                {this.state.enabled && <FormGroup inline>
                     <FormLabel>Цвет текста</FormLabel>
                     <OcrColorItem color={this.props.textColor || DEFAULT_WORKPLACE_TEXT_COLOR} onClick={this.showColorPicker} />
                 </FormGroup>}
 
-                {this.state.enabled && <FormGroup>
+                {this.state.enabled && <FormGroup inline>
                     <FormLabel>Отклонение цвета текста при поиске по цвету текста</FormLabel>
                     <OcrErrorDelta 
                         value={this.props.basicErrorDelta || 0}
@@ -105,7 +105,7 @@ export class OcrSettingsPanel extends React.Component {
                     />
                 </FormGroup>}
 
-                {this.state.enabled && <FormGroup>
+                {this.state.enabled && <FormGroup inline>
                     <FormLabel>Отклонение цвета текста при поиске соседних пикселей в найденном</FormLabel>
                     <OcrErrorDelta 
                         value={this.props.diffErrorDelta || 0}

@@ -9,4 +9,5 @@ export const ModalHeader = styled.div`
     font-weight: bold;
     font-size: 20px;
     width: 100%;
+    -webkit-user-select: none;
 `;
