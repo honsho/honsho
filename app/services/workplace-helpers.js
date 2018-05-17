@@ -46,12 +46,12 @@ const createWorkplaceAreaWindow = (app, workplace) => {
                 rightBottomY: (position[1] + size[1])
             };
 
-            updateWorkplaces(app, workplaces => {
+            updateWorkplaces(app, (workplaces, workplaceGroups) => {
                 if (workplaces[id]) {
                     workplaces[id].areaWindow = new WorkplaceWindow(data);
                 }
     
-                return Promise.resolve(workplaces);
+                return { workplaces, workplaceGroups };
             });
         }
     }, 500);
@@ -112,12 +112,12 @@ const createWorkplaceTranslateWindow = (app, workplace) => {
                 rightBottomY: (position[1] + size[1])
             };
 
-            updateWorkplaces(app, workplaces => {
+            updateWorkplaces(app, (workplaces, workplaceGroups) => {
                 if (workplaces[id]) {
                     workplaces[id].translateWindow = new WorkplaceWindow(data);
                 }
     
-                return Promise.resolve(workplaces);
+                return { workplaces, workplaceGroups };
             });
         }
     }, 500);
@@ -130,10 +130,10 @@ const createWorkplaceTranslateWindow = (app, workplace) => {
     return window;
 }
 
-export const create = async (app, workplaceData, withWindows = true) => {
+export const create = (app, workplaceData, withWindows = true) => {
     workplaceData = workplaceData || {};
     
-    const workplace = await ipcRenderer.sendSync('createWorkplace', workplaceData);
+    const workplace = ipcRenderer.sendSync('createWorkplace', workplaceData);
 
     if (withWindows) {
         createWindow(app, workplace);
@@ -160,7 +160,7 @@ export const closeWindow = ({ area, translate }) => {
 };
 
 export const show = (app, id) => {
-    updateWorkplaces(app, workplaces => {
+    updateWorkplaces(app, (workplaces, workplaceGroups) => {
         if (workplaces[id]) {
             workplaces[id].active = true;
         }
@@ -169,12 +169,12 @@ export const show = (app, id) => {
             app.windows.workplaces[id] = createWindow(app, workplaces[id]);
         }
 
-        return Promise.resolve(workplaces);
+        return { workplaces, workplaceGroups };
     });
 };
 
 export const hide = (app, id) => {
-    updateWorkplaces(app, workplaces => {
+    updateWorkplaces(app, (workplaces, workplaceGroups) => {
         if (workplaces[id]) {
             workplaces[id].active = false;
         }
@@ -185,6 +185,6 @@ export const hide = (app, id) => {
             delete app.windows.workplaces[id];
         }
 
-        return Promise.resolve(workplaces);
+        return { workplaces, workplaceGroups };
     });
 };

@@ -1,16 +1,19 @@
-export const updateWorkplaces = async (app, updateAction, onComplete) => {
-    const workplaces = app.store.get('workplaces') || {};
-    const workplaceGroups = app.store.get('workplace-groups') || {};
+export const updateWorkplaces = (app, updateAction, onComplete) => {
+    let workplaces = app.store.get('workplaces') || {};
+    let workplaceGroups = app.store.get('workplaceGroups') || {};
 
-    let changedWorkplaces = await updateAction(workplaces);
-    app.store.set(`workplaces`, changedWorkplaces);
+    const data = updateAction(workplaces, workplaceGroups);
+    workplaces = data.workplaces;
+    workplaceGroups = data.workplaceGroups;
+
+    app.store.set(`workplaces`, workplaces);
+    app.store.set(`workplaceGroups`, workplaceGroups);
     
-    onComplete && onComplete(changedWorkplaces);
-    changedWorkplaces = Object.values(changedWorkplaces);
+    onComplete && onComplete(workplaces, workplaceGroups);
 
-    const responseMessage = { workplaces: changedWorkplaces, workplaceGroups };
+    const responseMessage = { workplaces, workplaceGroups };
 
-    app.windows.main && app.windows.main.webContents.send('workplacesUpdate', responseMessage);
+    app.windows.main && app.windows.main.send('workplacesUpdate', responseMessage);
     for (let workplaceData of Object.values(app.windows.workplaces)) {
         workplaceData.translate && workplaceData.translate.send('workplacesUpdate', responseMessage);
     }

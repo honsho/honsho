@@ -6,8 +6,10 @@ export default app => {
         app.store.set('leo.login', login);
         app.store.set('leo.password', password);
 
-        const result = await Lingualeo.login(login, password);
-        app.windows.main.send('leoLoginCompleted', result);
+        if (login && password) {
+            const result = await Lingualeo.login(login, password);
+            app.windows.main.send('leoLoginCompleted', result);
+        }
     });
 
     ipcMain.on('leoTranslate', async (event, text) => {

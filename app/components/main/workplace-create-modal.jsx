@@ -15,9 +15,17 @@ export class WorkplaceCreateModal extends React.Component {
     constructor(props) {
         super(props);
 
+        this.titleRef = React.createRef();
+
         this.state = {
             title: (props.title || '')
         }
+    }
+
+    focusTextInput = () => {
+        setTimeout(() => {
+            this.titleRef.current && this.titleRef.current.focus();
+        }, 0);
     }
 
     onTitleChange = (e) => {
@@ -31,7 +39,7 @@ export class WorkplaceCreateModal extends React.Component {
         }
 
         ipcRenderer.send('createWorkplace', { title: this.state.title, groupId: this.props.groupId });
-        this.setState({ title: '' })
+        this.setState({ title: '' });
         this.close();
     }
 
@@ -40,15 +48,17 @@ export class WorkplaceCreateModal extends React.Component {
     }
 
     render() {
-        return <Rodal height={80} width={90} measure={'%'} visible={this.props.visible} closeOnEsc={true} onClose={this.props.onClose}>
+        return <Rodal height={150} visible={this.props.visible} closeOnEsc={true} onClose={this.props.onClose} onAnimationEnd={this.focusTextInput}>
             <Modal>
-                <ModalHeader>Создание новой группы</ModalHeader>
+                <ModalHeader>Создание новой рабочей области</ModalHeader>
 
                 <ModalBody>
-                    <FormGroup>
-                        <FormLabel>Название</FormLabel>
-                        <Input type="text" value={this.state.title} onChange={this.onTitleChange} />
-                    </FormGroup>
+                    <form onSubmit={this.create}>
+                        <FormGroup>
+                            <FormLabel>Название</FormLabel>
+                            <Input innerRef={this.titleRef} type="text" value={this.state.title} onChange={this.onTitleChange} />
+                        </FormGroup>
+                    </form>
                 </ModalBody>
 
                 <ModalFooter>

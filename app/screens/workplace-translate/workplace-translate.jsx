@@ -37,8 +37,8 @@ class WorkplaceTranslate extends React.Component {
 
         this.textRef = React.createRef();
 
-        ipcRenderer.on('workplacesUpdate', (event, workplaces) => {
-            const workplace = workplaces.find(w => w.id == this.props.id);
+        ipcRenderer.on('workplacesUpdate', (event, { workplaces }) => {
+            const workplace = workplaces[this.props.id];
             if (workplace) {
                 this.setState({
                     sourceText: workplace.lastParsedText,

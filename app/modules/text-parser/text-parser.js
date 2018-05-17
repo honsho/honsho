@@ -26,7 +26,6 @@ const parse = (imagePath, { leftTopX, leftTopY, rightBottomX, rightBottomY }, op
             fs.createReadStream(imagePath)
                 .pipe(new PNG())
                 .on('parsed', function() {
-                    
                     const pngImage = new PNG({ width, height });
                     PNG.bitblt(this.pack(), pngImage, leftTopX, leftTopY, width, height, 0, 0);
 

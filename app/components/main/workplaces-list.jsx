@@ -6,7 +6,7 @@ import { Accordion } from './../accordion/accordion';
 import { WorkplacesGroupHeader } from './workplaces-group-header.jsx';
 
 export class WorkplacesList extends React.Component {
-    renderWorkplace(id) {
+    renderWorkplace = id => {
         const workplace = (this.props.workplaces || {})[id];
         if (!workplace) {
             return null;
@@ -19,11 +19,11 @@ export class WorkplacesList extends React.Component {
         const workplaceGroups = Object.values(this.props.workplaceGroups);
 
         return <List>
-            {workplaceGroups.forEach(workplaceGroup => {
+            {workplaceGroups.map(workplaceGroup => {
                 const header = <WorkplacesGroupHeader {...workplaceGroup} />;
-                const items = workplaceGroup.workplacesIds.forEach(this.renderWorkplace);
+                const items = workplaceGroup.workplacesIds.map(this.renderWorkplace);
 
-                return <Accordion header={header} items={items} />
+                return <Accordion key={workplaceGroup.id} header={header} items={items} />
             })}
         </List>
     }

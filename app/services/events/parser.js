@@ -7,7 +7,7 @@ export default app => {
     ipcMain.on('parse', async (event, { id }) => await parseTextAndUpdateWorkplaces(app, id));
 
     ipcMain.on('textColorChange', (event, { id, textColor }) => {
-        updateWorkplaces(app, workplaces => {
+        updateWorkplaces(app, (workplaces, workplaceGroups) => {
             if (workplaces[id]) {
                 if (!workplaces[id].imageCleaner) {
                     workplaces[id].imageCleaner = {};
@@ -16,12 +16,12 @@ export default app => {
                 workplaces[id].imageCleaner.textColor = textColor;
             }
 
-            return Promise.resolve(workplaces);
+            return { workplaces, workplaceGroups };
         });
     });
 
     ipcMain.on('basicErrorDeltaChange', (event, { id, basicErrorDelta }) => {
-        updateWorkplaces(app, workplaces => {
+        updateWorkplaces(app, (workplaces, workplaceGroups) => {
             if (workplaces[id]) {
                 if (!workplaces[id].imageCleaner) {
                     workplaces[id].imageCleaner = {};
@@ -30,12 +30,12 @@ export default app => {
                 workplaces[id].imageCleaner.basicErrorDelta = basicErrorDelta;
             }
 
-            return Promise.resolve(workplaces);
+            return { workplaces, workplaceGroups };
         });
     });
 
     ipcMain.on('diffErrorDeltaChange', (event, { id, diffErrorDelta }) => {
-        updateWorkplaces(app, workplaces => {
+        updateWorkplaces(app, (workplaces, workplaceGroups) => {
             if (workplaces[id]) {
                 if (!workplaces[id].imageCleaner) {
                     workplaces[id].imageCleaner = {};
@@ -44,7 +44,7 @@ export default app => {
                 workplaces[id].imageCleaner.diffErrorDelta = diffErrorDelta;
             }
 
-            return Promise.resolve(workplaces);
+            return { workplaces, workplaceGroups };
         });
     });
 };

@@ -1,4 +1,7 @@
 import React from 'react';
+import { AccordionWrapper } from './accordion-wrapper';
+import { AccordionHeader } from './accordion-header';
+import { AccordionItems } from './accordion-items';
 
 export class Accordion extends React.Component {
     constructor(props) {
@@ -9,15 +12,15 @@ export class Accordion extends React.Component {
         }
     }
 
-    toggleExpanded = () => this.setState({ expanded: !this.state.expanded });
+    toggleExpanded = () => this.props.items.length && this.setState({ expanded: !this.state.expanded });
 
     render() {
-        return <div>
-            <div onClick={this.toggleExpanded}>
+        return <AccordionWrapper>
+            <AccordionHeader onClick={this.toggleExpanded}>
                 {this.props.header}
-            </div>
+            </AccordionHeader>
             
-            {this.state.expanded && <div>{this.props.items}</div>}
-        </div>;
+            {this.state.expanded && !!this.props.items.length && <AccordionItems>{this.props.items}</AccordionItems>}
+        </AccordionWrapper>;
     }
 }

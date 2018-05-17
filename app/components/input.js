@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 export const Input = styled.input`
     box-sizing: border-box;
     flex: 1 0;
-    padding: 5px 10px;
+    padding: 5px;
     color: #244769;
     border: 1px solid #b5d1f1;
     outline: none;

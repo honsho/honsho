@@ -25,7 +25,7 @@ export class WorkplaceSettings extends React.Component {
 
         this.state = {
             visible: false,
-            name: (props.name || ''),
+            title: (props.title || ''),
             translateByClicK: !!props.translateByClicK,
             hideByTitleClick: !!props.hideByTitleClick,
             textColor: imageCleanerOptions.textColor,
@@ -47,7 +47,7 @@ export class WorkplaceSettings extends React.Component {
         });
     }
 
-    onNameChange = e => this.setState({ name: e.target.value });
+    onTitleChange = e => this.setState({ title: e.target.value });
 
     toggleTranslateByClicK = () => this.setState({ translateByClicK: !this.state.translateByClicK });
 
@@ -58,7 +58,7 @@ export class WorkplaceSettings extends React.Component {
     save = () => {
         const data = {
             id: this.props.id,
-            name: this.state.name,
+            title: this.state.title,
             translateByClicK: this.state.translateByClicK,
             hideByTitleClick: this.state.hideByTitleClick,
             imageCleaner: {
@@ -72,8 +72,15 @@ export class WorkplaceSettings extends React.Component {
         this.close();
     }
 
-    open = () => this.setState({ visible: true });
-    close = () => this.setState({ visible: false });
+    open = e => {
+        e && e.stopPropagation();
+        this.setState({ visible: true });
+    }
+    
+    close = e => {
+        e && e.stopPropagation();
+        this.setState({ visible: false });
+    }
 
     render() {
         return <div>
@@ -91,7 +98,7 @@ export class WorkplaceSettings extends React.Component {
                             <PanelBody>
                                 <FormGroup inline>
                                     <FormLabel>Название</FormLabel>
-                                    <Input type="text" value={this.state.name} onChange={this.onNameChange} />
+                                    <Input type="text" value={this.state.title} onChange={this.onTitleChange} />
                                 </FormGroup>
 
                                 <FormGroup inline>
@@ -110,7 +117,8 @@ export class WorkplaceSettings extends React.Component {
                             textColor={this.state.textColor}
                             basicErrorDelta={this.state.basicErrorDelta}
                             diffErrorDelta={this.state.diffErrorDelta}
-                            onChange={this.onOcrSettingChange} />
+                            onChange={this.onOcrSettingChange}
+                        />
                     </ModalBody>
 
                     <ModalFooter>

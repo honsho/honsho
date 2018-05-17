@@ -36,18 +36,21 @@ export const parseTextAndUpdateWorkplaces = async (app, id = null) => {
         const text = await parseText(getCoordsFromAreaWindow(workplace.areaWindow), {
             imageCleaner: workplace.imageCleaner
         });
+        
         workplace = app.store.get(`workplaces.${workplace.id}`);
-
         if (workplace && text) {
             workplace.lastParsedText = text;
             app.store.set(`workplaces.${workplace.id}`, workplace);
 
-            const newWorkplaces = Object.values(app.store.get('workplaces') || {});
+            workplaces = app.store.get('workplaces') || {};
+            const workplaceGroups = app.store.get('workplaceGroups') || {};
 
-            app.windows.main.webContents.send('workplacesUpdate', newWorkplaces);
+            const responseMessage = { workplaces, workplaceGroups };
+            
+            app.windows.main.webContents.send('workplacesUpdate', responseMessage);
             const workplaceData = app.windows.workplaces[workplace.id];
             if (workplaceData && workplaceData.translate) {
-                workplaceData.translate.send('workplacesUpdate', newWorkplaces);
+                workplaceData.translate.send('workplacesUpdate', responseMessage);
             }
         }
     }

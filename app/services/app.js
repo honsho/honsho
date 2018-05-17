@@ -20,12 +20,22 @@ export class App {
     }
 
     initialize(mainWindow) {
+        this.updateStoreData();
         this.createWindows(mainWindow);
-
         this.login();
 
         this.registerEvents();
         this.registerShortcuts();
+    }
+
+    updateStoreData() {
+        const workplaces = this.store.get('workplaces') || {};
+        for (let n in workplaces) {
+            workplaces[n].lastParsedText = '';
+            workplaces[n].active = false;
+        }
+
+        this.store.set(`workplaces`, workplaces);
     }
 
     createWindows(main) {
@@ -47,8 +57,11 @@ export class App {
     }
 
     async login() {
-        const result = await Lingualeo.login(this.store.get('leo.login'), this.store.get('leo.password'));
-        this.windows.main.send('leoLoginCompleted', result);
+        const { login, password } = this.store.get('leo') || {};
+        if (login && password) {
+            const result = await Lingualeo.login(login, password);
+            this.windows.main.send('leoLoginCompleted', result);
+        }
     }
 
     registerEvents() {

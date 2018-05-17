@@ -26,16 +26,6 @@ const createWindow = () => {
         mainWindow.focus(); 
     });
 
-    mainWindow.webContents.once('dom-ready', () => {
-        const workplaces = Object.values(application.store.get('workplaces') || {});
-        workplaces.forEach(workplace => {
-            workplace.lastParsedText = '';
-            application.store.set(`workplaces.${workplace.id}`, workplace);
-        });
-
-        mainWindow.webContents.send('initialize', { workplaces });
-    });
-
     mainWindow.on('closed', () => app.quit());
     
 }
