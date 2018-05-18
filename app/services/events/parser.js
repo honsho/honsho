@@ -4,7 +4,8 @@ import { parseTextAndUpdateWorkplaces } from './../../services/parse-text';
 import { updateWorkplaces } from './helpers/update-workplaces';
 
 export default app => {
-    ipcMain.on('parse', async (event, { id }) => await parseTextAndUpdateWorkplaces(app, id));
+    ipcMain.on('startParse', (event, id) => {
+    });
 
     ipcMain.on('textColorChange', (event, { id, textColor }) => {
         updateWorkplaces(app, (workplaces, workplaceGroups) => {

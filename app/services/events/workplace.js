@@ -107,7 +107,8 @@ export default app => {
             const workplace = workplaces[data.id];
             if (workplace) {
                 workplace.title = data.title;
-                workplace.translateByClicK = data.translateByClicK;
+                workplace.parseByAreaClick = data.parseByAreaClick;
+                workplace.translateByTextSelect = data.translateByTextSelect;
                 workplace.hideByTitleClick = data.hideByTitleClick;
                 workplace.imageCleaner = data.imageCleaner;
             }

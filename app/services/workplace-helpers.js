@@ -34,6 +34,10 @@ const createWorkplaceAreaWindow = (app, workplace) => {
     });
     window.setMenu(null);
 
+    window.webContents.once('dom-ready', () => {
+        window.webContents.send('initialize', { workplace });
+    });
+
     const updateWindow = throttle(() => {
         if (window) {
             const position = window.getPosition().map(position => Math.max(position, 0));
@@ -65,7 +69,7 @@ const createWorkplaceAreaWindow = (app, workplace) => {
 }
 
 const createWorkplaceTranslateWindow = (app, workplace) => {
-    const { id, translateWindow, translateByClicK } = workplace;
+    const { id, translateWindow } = workplace;
 
     let props = {};
     if (translateWindow && translateWindow.rightBottomX) {
@@ -97,7 +101,7 @@ const createWorkplaceTranslateWindow = (app, workplace) => {
     window.setMenu(null);
 
     window.webContents.once('dom-ready', () => {
-        window.webContents.send('initialize', workplace);
+        window.webContents.send('initialize', { workplace });
     });
 
     const updateWindow = throttle(() => {

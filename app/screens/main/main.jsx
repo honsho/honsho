@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, desktopCapturer, screen } = require('electron');
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MdSettingsApplications from 'react-icons/lib/md/settings-applications';
@@ -28,6 +28,32 @@ class Main extends React.Component {
             if (!result) {
                 alert('Невозможно залогиниться в LinguaLeo', 'Ошибка');
             }
+        });
+        
+        ipcRenderer.on('createScreenshot', event => {
+            const determineScreenShotSize = () => {
+                const screenSize = screen.getPrimaryDisplay().workAreaSize;
+                const maxDimension = Math.max(screenSize.width, screenSize.height);
+
+                return {
+                    width: maxDimension * window.devicePixelRatio,
+                    height: maxDimension * window.devicePixelRatio
+                }
+            };
+
+            const thumbSize = determineScreenShotSize();
+
+            desktopCapturer.getSources({ types: ['screen'], thumbnailSize: thumbSize }, (error, sources) => {
+                if (error) {
+                    return;
+                }
+
+                for (let source of sources) {
+                    if (source.name === 'Entire screen' || source.name === 'Screen 1') {
+                        return ipcRenderer.send('screenshotCreated', source.thumbnail.toPNG());
+                    }
+                }
+            });
         });
     }
 

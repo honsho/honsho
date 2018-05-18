@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const PNG = require('pngjs').PNG;
-const sharp = require('sharp');
 
 const getColorAtPoint = (imageInfo, x, y) => {
     const idx = (imageInfo.width * y + x) << 2;
@@ -28,106 +27,96 @@ const areColorsEqual = (color1, color2, errorDelta = 0) => {
     return ['r', 'g', 'b'].every(c => Math.abs(color1[c] - color2[c]) <= errorDelta);
 }
 
-const clean = ({ imagePath, textColor, basicErrorDelta, diffErrorDelta }) => {
+const clean = async ({ png, imagePath, textColor, basicErrorDelta, diffErrorDelta }) => {
     if (!textColor) {
-        return Promise.resolve();
+        throw new Error();
     }
     basicErrorDelta = basicErrorDelta || 0;
     diffErrorDelta = diffErrorDelta || 0;
 
-    return new Promise((resolve, reject) => {
-        const isWantedColor = (color) => areColorsEqual(color, textColor, diffErrorDelta);
+    const isWantedColor = (color) => areColorsEqual(color, textColor, diffErrorDelta);
 
-        fs.createReadStream(imagePath)
-            .pipe(new PNG())
-            .on('parsed', function() {
-                const startPoints = [];
-                for (let y = 0; y < this.height; y++) {
-                    for (let x = 0; x < this.width; x++) {
-                        const color = getColorAtPoint(this, x, y);
+    const startPoints = [];
+    for (let y = 0; y < png.height; y++) {
+        for (let x = 0; x < png.width; x++) {
+            const color = getColorAtPoint(png, x, y);
 
-                        if (areColorsEqual(color, textColor, basicErrorDelta)) {
-                            startPoints.push({ x, y });
+            if (areColorsEqual(color, textColor, basicErrorDelta)) {
+                startPoints.push({ x, y });
+            }
+        }
+    }
+
+    const visitedPoints = [];
+
+    startPoints.forEach((startPoint, i) => {
+        const pixelStack = [startPoint];
+        
+        while (pixelStack.length) {
+            let { x, y } = pixelStack.pop();
+
+            if (visitedPoints[`${x},${y}`]) {
+                continue;        
+            }
+            visitedPoints[`${x},${y}`] = true;
+
+            while (y >= 0 && isWantedColor(getColorAtPoint(png, x, (y - 1)))) {
+                y -= 1;
+            }
+
+            let reachLeft = false;
+            let reachRight = false;
+
+            while (y <= png.height && isWantedColor(getColorAtPoint(png, x, y))) {
+                setColorAtPoint(png, x, y, textColor);
+
+                // Смотрим налево
+                if (x > 0) {
+                    const leftPixelColor = getColorAtPoint(png, x - 1, y);
+                    if (isWantedColor(leftPixelColor)) {
+                        if (!reachLeft) {
+                            pixelStack.push({ x: (x - 1), y });
+                            reachLeft = true;
                         }
+                    } else if (reachLeft) {
+                        reachLeft = false;
                     }
                 }
 
-                const visitedPoints = [];
-
-                startPoints.forEach(startPoint => {
-                    const pixelStack = [startPoint];
-                    
-                    while (pixelStack.length) {
-                        let { x, y } = pixelStack.pop();
-
-                        if (visitedPoints[`${x},${y}`]) {
-                            continue;        
+                // Смотрим направо
+                if (x < png.width) {
+                    const rightPixelColor = getColorAtPoint(png, x + 1, y);
+                    if (isWantedColor(rightPixelColor)) {
+                        if (!reachRight) {
+                            pixelStack.push({ x: (x + 1), y });
+                            reachRight = true;
                         }
-                        visitedPoints[`${x},${y}`] = true;
-
-                        while (y >= 0 && isWantedColor(getColorAtPoint(this, x, (y - 1)))) {
-                            y -= 1;
-                        }
-
-                        let reachLeft = false;
-                        let reachRight = false;
-
-                        while (y <= this.height && isWantedColor(getColorAtPoint(this, x, y))) {
-                            setColorAtPoint(this, x, y, textColor);
-
-                            // Смотрим налево
-                            if (x > 0) {
-                                const leftPixelColor = getColorAtPoint(this, x - 1, y);
-                                if (isWantedColor(leftPixelColor)) {
-                                    if (!reachLeft) {
-                                        pixelStack.push({ x: (x - 1), y });
-                                        reachLeft = true;
-                                    }
-                                } else if (reachLeft) {
-                                    reachLeft = false;
-                                }
-                            }
-
-                            // Смотрим направо
-                            if (x < this.width) {
-                                const rightPixelColor = getColorAtPoint(this, x + 1, y);
-                                if (isWantedColor(rightPixelColor)) {
-                                    if (!reachRight) {
-                                        pixelStack.push({ x: (x + 1), y });
-                                        reachRight = true;
-                                    }
-                                } else if (reachRight) {
-                                    reachRight = false;
-                                }
-                            }
-
-                            y += 1;
-                        }
-                    }
-                });
-
-                for (let y = 0; y < this.height; y++) {
-                    for (let x = 0; x < this.width; x++) {
-                        const color = getColorAtPoint(this, x, y);
-                        const isPrimaryColor = areColorsEqual(color, textColor);
-
-                        generalizeColor(this, x, y, isPrimaryColor ? 'primary' : 'secondary');
+                    } else if (reachRight) {
+                        reachRight = false;
                     }
                 }
 
-                const resizer = sharp().resize(this.width * 3, this.height * 3).png();
-                const writeStream = this.pack().pipe(resizer).pipe(fs.createWriteStream(imagePath));
-                writeStream.on('finish', () => resolve());
-                writeStream.on('error', () => reject());
-            });
+                y += 1;
+            }
+        }
     });
+
+    for (let y = 0; y < png.height; y++) {
+        for (let x = 0; x < png.width; x++) {
+            const color = getColorAtPoint(png, x, y);
+            const isPrimaryColor = areColorsEqual(color, textColor);
+
+            generalizeColor(png, x, y, isPrimaryColor ? 'primary' : 'secondary');
+        }
+    }
+
+    return png;
 }
 
-module.exports = async ({ imagePath, textColor, basicErrorDelta, diffErrorDelta }) => {
+module.exports = async data => {
     try {
-        await clean({ imagePath, textColor, basicErrorDelta, diffErrorDelta })
-        return true;
+        return await clean(data);
     } catch (e) {
-        return false;
+        return null;
     }
 };

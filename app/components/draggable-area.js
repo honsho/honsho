@@ -10,7 +10,8 @@ export const DraggableArea = styled.div`
     left: 0;
     cursor: -webkit-grab;
     -webkit-app-region: drag;
-    background: ${props => props.color || '#8399c5'};
+    background: ${props => props.active ? (props.activeColor || '#b5d1f1') : (props.color || '#8399c5')};
+    transition: background-color 0.15s ease-in-out;
 
     &:before, &:after {
         content: "";

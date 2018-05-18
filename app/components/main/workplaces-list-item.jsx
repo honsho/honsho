@@ -16,7 +16,7 @@ export class WorkplacesListItem extends React.Component {
     removeWorkplace = () => ipcRenderer.send('removeWorkplace', this.props.id);
 
     render() {
-        let { id, title, active, translateByClicK, hideByTitleClick, imageCleaner } = this.props;
+        let { id, title, active, parseByAreaClick, translateByTextSelect, hideByTitleClick, imageCleaner } = this.props;
         imageCleaner = imageCleaner || {};
 
         return <ListItem>
@@ -32,7 +32,8 @@ export class WorkplacesListItem extends React.Component {
                 <WorkplaceSettings
                     id={id}
                     title={title}
-                    translateByClicK={translateByClicK}
+                    parseByAreaClick={parseByAreaClick}
+                    translateByTextSelect={translateByTextSelect}
                     hideByTitleClick={hideByTitleClick}
                     imageCleaner={imageCleaner}
                 />

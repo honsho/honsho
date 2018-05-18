@@ -29,6 +29,8 @@ export class OcrSettingsPanel extends React.Component {
         }
     }
 
+    onToggleParseByClick
+
     onChange = (propName, value) => {
         if (!this.state.enabled) {
             value = null;
@@ -73,6 +75,10 @@ export class OcrSettingsPanel extends React.Component {
         this.onChange('diffErrorDelta', diffErrorDelta);
     }
 
+    onToggleParseAreaByClick = e => {
+        this.onChange('parseByAreaClick', !!e.target.checked);
+    }
+
     render() {
         return <Panel>
             <PanelTitle>Распознавание текста</PanelTitle>
@@ -86,6 +92,11 @@ export class OcrSettingsPanel extends React.Component {
                         onCancel={this.hideColorPicker}
                     />
                 </OcrColorPicker>}
+
+                <FormGroup inline>
+                    <FormLabel>Парсить текст по клику внутри прямоугольной области</FormLabel>
+                    <input type="checkbox" onChange={this.onToggleParseAreaByClick} checked={this.props.parseByAreaClick} />
+                </FormGroup>
 
                 <FormGroup inline>
                     <FormLabel>Включить улучшенное распознавание текста</FormLabel>

@@ -4,11 +4,12 @@ export class Workplace {
     constructor({ 
         id,
         groupId,
-        title, 
-        active, 
-        translateByClicK, 
-        hideByTitleClick, 
-        lastParsedText, 
+        title,
+        active,
+        parseByAreaClick,
+        translateByTextSelect,
+        hideByTitleClick,
+        lastParsedText,
         imageCleaner,
         areaWindow,
         translateWindow
@@ -17,7 +18,8 @@ export class Workplace {
         this.groupId = groupId;
         this.title = title || '';
         this.active = active || false;
-        this.translateByClicK = !!translateByClicK;
+        this.parseByAreaClick = parseByAreaClick || false;
+        this.translateByTextSelect = !!translateByTextSelect;
         this.hideByTitleClick = !!hideByTitleClick;
         this.lastParsedText = lastParsedText || '';
         this.imageCleaner = imageCleaner || {};

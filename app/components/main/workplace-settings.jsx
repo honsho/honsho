@@ -26,7 +26,8 @@ export class WorkplaceSettings extends React.Component {
         this.state = {
             visible: false,
             title: (props.title || ''),
-            translateByClicK: !!props.translateByClicK,
+            parseByAreaClick: !!props.parseByAreaClick,
+            translateByTextSelect: !!props.translateByTextSelect,
             hideByTitleClick: !!props.hideByTitleClick,
             textColor: imageCleanerOptions.textColor,
             basicErrorDelta: imageCleanerOptions.basicErrorDelta,
@@ -49,7 +50,7 @@ export class WorkplaceSettings extends React.Component {
 
     onTitleChange = e => this.setState({ title: e.target.value });
 
-    toggleTranslateByClicK = () => this.setState({ translateByClicK: !this.state.translateByClicK });
+    toggleTranslateByTextSelect = () => this.setState({ translateByTextSelect: !this.state.translateByTextSelect });
 
     toggleHideByTitleClick = () => this.setState({ hideByTitleClick: !this.state.hideByTitleClick });
 
@@ -59,7 +60,8 @@ export class WorkplaceSettings extends React.Component {
         const data = {
             id: this.props.id,
             title: this.state.title,
-            translateByClicK: this.state.translateByClicK,
+            parseByAreaClick: this.state.parseByAreaClick,
+            translateByTextSelect: this.state.translateByTextSelect,
             hideByTitleClick: this.state.hideByTitleClick,
             imageCleaner: {
                 textColor: this.state.textColor,
@@ -102,8 +104,8 @@ export class WorkplaceSettings extends React.Component {
                                 </FormGroup>
 
                                 <FormGroup inline>
-                                    <FormLabel>Переводить по клику</FormLabel>
-                                    <input type="checkbox" checked={this.state.translateByClicK} onChange={this.toggleTranslateByClicK} />
+                                    <FormLabel>Переводить сразу после выделения текста</FormLabel>
+                                    <input type="checkbox" checked={this.state.translateByTextSelect} onChange={this.toggleTranslateByTextSelect} />
                                 </FormGroup>
 
                                 <FormGroup inline>
@@ -114,6 +116,7 @@ export class WorkplaceSettings extends React.Component {
                         </Panel>
 
                         <OcrSettingsPanel
+                            parseByAreaClick={this.state.parseByAreaClick}
                             textColor={this.state.textColor}
                             basicErrorDelta={this.state.basicErrorDelta}
                             diffErrorDelta={this.state.diffErrorDelta}

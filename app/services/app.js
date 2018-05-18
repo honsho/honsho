@@ -73,6 +73,6 @@ export class App {
     }
 
     registerShortcuts() {
-        globalShortcut.register('Alt+R', async () => await parseTextAndUpdateWorkplaces(this));
+        globalShortcut.register('Alt+R', () => parseTextAndUpdateWorkplaces(this));
     }
 }

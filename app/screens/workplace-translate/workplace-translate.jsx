@@ -26,11 +26,9 @@ class WorkplaceTranslate extends React.Component {
         super(props);
 
         this.state = {
-            sourceText: '',
             targetText: '',
             textToTranslate: '',
-            translateByClicK: !!props.translateByClicK,
-            hideByTitleClick: !!props.hideByTitleClick,
+            workplace: props.workplace,
             translateModalVisible: false,
             translatedItems: []
         }
@@ -38,13 +36,9 @@ class WorkplaceTranslate extends React.Component {
         this.textRef = React.createRef();
 
         ipcRenderer.on('workplacesUpdate', (event, { workplaces }) => {
-            const workplace = workplaces[this.props.id];
+            const workplace = workplaces[this.state.workplace.id];
             if (workplace) {
-                this.setState({
-                    sourceText: workplace.lastParsedText,
-                    translateByClicK: workplace.translateByClicK,
-                    hideByTitleClick: workplace.hideByTitleClick
-                });
+                this.setState({ workplace: { ...workplace } });
             }
         });
         ipcRenderer.on('leoTranslateCompleted', (event, translatedItems) => this.setState({ translatedItems: (translatedItems || []) }));
@@ -59,7 +53,7 @@ class WorkplaceTranslate extends React.Component {
         textSelection(this.textRef.current, targetText => {
             targetText = targetText.trim();
             this.setState({ targetText }, () => {
-                if (this.state.translateByClicK) {
+                if (this.state.workplace && this.state.workplace.translateByTextSelect) {
                     this.openTranslateTextModal();
                 }
             });
@@ -101,10 +95,14 @@ class WorkplaceTranslate extends React.Component {
     }
 
     render() {
+        if (!this.state.workplace) {
+            return null;
+        }
+
         return <TranslatePanelWrapper>            
             <Rodal height={80} width={90} measure={'%'} visible={this.state.translateModalVisible} closeOnEsc={true} onClose={this.closeTranslateTextModal}>
                 <Modal>
-                    <ModalHeader onClick={this.state.hideByTitleClick && this.closeTranslateTextModal}>
+                    <ModalHeader onClick={this.state.workplace.hideByTitleClick && this.closeTranslateTextModal}>
                         Перевод
                     </ModalHeader>
 
@@ -123,7 +121,7 @@ class WorkplaceTranslate extends React.Component {
 
             <DraggableArea />
             <TranslatePanel>
-                <TranslatePanelSource withBorder innerRef={this.textRef}>{this.state.sourceText}</TranslatePanelSource>
+                <TranslatePanelSource withBorder innerRef={this.textRef}>{this.state.workplace.lastParsedText}</TranslatePanelSource>
                 <TranslatePanelActiveContent>
                     <TranslatePanelTarget 
                         title="Выделите текст выше, измените его здесь и нажмите на кнопку перевода"
@@ -141,9 +139,9 @@ class WorkplaceTranslate extends React.Component {
     }
 }
 
-ipcRenderer.on('initialize', (event, { id, translateByClicK, hideByTitleClick }) => {
+ipcRenderer.on('initialize', (event, { workplace }) => {
     ReactDOM.render(
-        <WorkplaceTranslate id={id} translateByClicK={translateByClicK} hideByTitleClick={hideByTitleClick} />,
+        <WorkplaceTranslate workplace={workplace} />,
         document.getElementById('app')
     );
 });
